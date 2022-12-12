@@ -13,6 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		21E95CFCDC46D34CF17E20C0 /* Pods_ReactNativeAttentionTestApp_ReactNativeAttentionTestAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10C00FE1C3414DAF1FF74176 /* Pods_ReactNativeAttentionTestApp_ReactNativeAttentionTestAppTests.framework */; };
 		3EE90401719809F5F7E527C8 /* Pods_ReactNativeAttentionTestApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C0E4E96F12804276A12FA00 /* Pods_ReactNativeAttentionTestApp.framework */; };
+		53400E8129479D090071C791 /* flow_axes.png in Resources */ = {isa = PBXBuildFile; fileRef = 53400E8029479D090071C791 /* flow_axes.png */; };
 		53891C2D27AB34C000CB292A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 53891C2C27AB34C000CB292A /* GoogleService-Info.plist */; };
 		53891C2E27AB34C000CB292A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 53891C2C27AB34C000CB292A /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -42,6 +43,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ReactNativeAttentionTestApp/main.m; sourceTree = "<group>"; };
 		20FFD831507BC2E385EE7815 /* Pods-ReactNativeAttentionTestApp-ReactNativeAttentionTestAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeAttentionTestApp-ReactNativeAttentionTestAppTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeAttentionTestApp-ReactNativeAttentionTestAppTests/Pods-ReactNativeAttentionTestApp-ReactNativeAttentionTestAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2E3E244F929D03A73A2E7FA1 /* Pods-ReactNativeAttentionTestApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeAttentionTestApp.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeAttentionTestApp/Pods-ReactNativeAttentionTestApp.debug.xcconfig"; sourceTree = "<group>"; };
+		53400E8029479D090071C791 /* flow_axes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = flow_axes.png; path = ../icons/flow_axes.png; sourceTree = "<group>"; };
 		53891C2C27AB34C000CB292A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ReactNativeAttentionTestApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A5CA2DE08B14905C164C79B8 /* Pods-ReactNativeAttentionTestApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeAttentionTestApp.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeAttentionTestApp/Pods-ReactNativeAttentionTestApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				53400E8029479D090071C791 /* flow_axes.png */,
 				13B07FAE1A68108700A75B9A /* ReactNativeAttentionTestApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ReactNativeAttentionTestAppTests */,
@@ -248,6 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53400E8129479D090071C791 /* flow_axes.png in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				53891C2D27AB34C000CB292A /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,

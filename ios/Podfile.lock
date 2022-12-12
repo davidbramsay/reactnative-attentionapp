@@ -1109,7 +1109,7 @@ PODS:
     - Firebase/Storage (= 9.2.0)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.5.0):
+  - RNGestureHandler (2.8.0):
     - React-Core
   - RNReanimated (2.9.1):
     - DoubleConversion
@@ -1141,6 +1141,8 @@ PODS:
   - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
+  - RNSketchCanvas (0.8.0):
+    - React
   - RNSVG (12.3.0):
     - React-Core
   - Yoga (1.14.0)
@@ -1215,6 +1217,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNSketchCanvas (from `../node_modules/@terrylinla/react-native-sketch-canvas`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -1345,6 +1348,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSketchCanvas:
+    :path: "../node_modules/@terrylinla/react-native-sketch-canvas"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -1427,13 +1432,14 @@ SPEC CHECKSUMS:
   RNFBAuth: 771989f00674cfda96395cc8a1e65aa4e40eb1b2
   RNFBFirestore: 3412ac1998c6841415906e9c1a98336c48d52806
   RNFBStorage: b4c7780581486089fba015ef3c5544a06d4c29f1
-  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNReanimated: b5b17149593e7c05e4ec5c0efea1f21e05829510
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
+  RNSketchCanvas: 9c28adb5381543ed55cc98ce6de46479cb3cb12c
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 0bf6c890a2249fd9e44827e5df7cb4d1e517c493
+PODFILE CHECKSUM: f7dd623809beebcc6e291565646b23a2d576f69d
 
 COCOAPODS: 1.11.3

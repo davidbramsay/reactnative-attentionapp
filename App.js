@@ -108,8 +108,8 @@ function App() {
     const [streamDataUI, setStreamDataUI] = useState(false);	
     const streamDataUIref = useRef(false);
 
-    const [glassesBlinkData, setGlassesBlinkData] = useState(Array(3000).fill(0));
-    const [glassesThermalData, setGlassesThermalData] = useState(Array(100).fill([0,0]));
+    const [glassesBlinkData, setGlassesBlinkData] = useState(Array(1000).fill(0));
+    const [glassesThermalData, setGlassesThermalData] = useState(Array(300).fill([0,0]));
     const [glassesAccData, setGlassesAccData] = useState(Array(100).fill([0,0,0]));
     const [glassesGyroData, setGlassesGyroData] = useState(Array(100).fill([0,0,0]));
 
@@ -238,6 +238,10 @@ function App() {
 	//console.log(parsedPayload); //i.e. [5, 92, 38148, 0, 200, NaN, NaN, NaN, NaN, NaN]
 	//packetType, packetNum, msFromStart, epoch, PacketSize
 	
+	streamDataUIref.current += 1;	
+	let THRESH = 2;	
+	if (streamDataUIref.current > THRESH) streamDataUIref == 1;	
+
 	switch(parsedPayload[0]){
 
 		case 5:
@@ -250,7 +254,7 @@ function App() {
 				dataLog('g',['b', ...parsedPayload, 'PAYLOAD', ...blinkData]);
 			}
 			
-			if (streamDataUIref.current){
+			if (streamDataUIref.current >= THRESH){
 
 				setGlassesBlinkData((prev) => [...prev.slice(blinkData.length), ...blinkData]);
 			}/* else{
@@ -281,7 +285,7 @@ function App() {
 			}
 
 			
-			if (streamDataUIref.current){	
+			if (streamDataUIref.current >= THRESH){	
 
 				//for now, we can pull temple_tp and nose_tp to plot
 				// temple_tp = [0,3,6,9,12]; nose_tp = [15,18,21,24,27]
@@ -307,7 +311,7 @@ function App() {
 				dataLog('g',['a', ...parsedPayload, 'PAYLOAD', ...accData]);
 			}
 
-			if (streamDataUIref.current){
+			if (streamDataUIref.current >= THRESH){
 
 				let accPlotVals = [];
 				for (let i=0; i<25; i++){
@@ -331,7 +335,7 @@ function App() {
 				dataLog('g',['g', ...parsedPayload, 'PAYLOAD', ...gyroData]);
 			}
 
-			if (streamDataUIref.current){
+			if (streamDataUIref.current >= THRESH){
 
 				let gyroPlotVals = [];
 				for (let i=0; i<25; i++){

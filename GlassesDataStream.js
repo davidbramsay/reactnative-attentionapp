@@ -121,26 +121,6 @@ export default class GlassesDataStream extends React.Component {
 	this.props.setStreamDataUI(false);  
   }
 
-  componentDidUpdate = (nextProps) => {
-    //on change of glassesStatus...	  
-    if (nextProps.glassesStatus !== this.props.glassesStatus) {
-	console.log('Got status update');
-
-	//if we're not scanning and haven't connected to glasses, scan	  
-	if(!this.props.scanning && this.props.glassesStatus != 'Connected.'){
-		console.log('dataview: we are not scanning but we should be now');
-		this.props.setScanning(true);
-	}
-
-	//if we're scanning but have connected to glasses, stop scan	  
-	if(this.props.scanning && this.props.glassesStatus == 'Connected.'){
-		console.log('dataview: we are scanning but we now don\'t need to');
-		this.props.setScanning(false);
-	}
-    }
-  }	
-
-
   setLightWhite(){
     let i = this.state.intensity;
     let b = this.state.startBlue;
@@ -238,7 +218,7 @@ export default class GlassesDataStream extends React.Component {
   render() {
     return (
       <ScrollView>
-	<NavCallbackComponent {...this.props}/>   
+	<NavCallbackComponent {...this.props}/>
 
         <View style={styles.viewContainer}>
           <View style={{height:115, width:'100%'}}>

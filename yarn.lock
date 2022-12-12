@@ -1691,6 +1691,11 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@terrylinla/react-native-sketch-canvas@^0.8.0":
+  "integrity" "sha512-rWLZkvYbbQ2Pje8AyT7+8nunXRNaOjfpJTYUHfUH1EVvRs+Es0rJlqoS1UmQbhKCXIra8xiBBD1jHs10S//mxg=="
+  "resolved" "https://registry.npmjs.org/@terrylinla/react-native-sketch-canvas/-/react-native-sketch-canvas-0.8.0.tgz"
+  "version" "0.8.0"
+
 "@tighten/react-native-time-input@^1.0.3":
   "integrity" "sha512-tKHIUQp1rd3ekgJ9weW+UwPWImr8QyAK9lFLMbHnkzUpQZjPZYVNiSSnoulCP/ydRo25uSnSUUu57/Hm8TdRIQ=="
   "resolved" "https://registry.npmjs.org/@tighten/react-native-time-input/-/react-native-time-input-1.0.3.tgz"
@@ -6172,10 +6177,10 @@
   "resolved" "https://registry.npmjs.org/react-native-dropdown-picker/-/react-native-dropdown-picker-5.4.2.tgz"
   "version" "5.4.2"
 
-"react-native-gesture-handler@^2.5.0", "react-native-gesture-handler@>= 1.0.0":
-  "integrity" "sha512-djZdcprFf08PZC332D+AeG5wcGeAPhzfCJtB3otUgOgTlvjVXmg/SLFdPJSpzLBqkRAmrC77tM79QgKbuLxkfw=="
-  "resolved" "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.5.0.tgz"
-  "version" "2.5.0"
+"react-native-gesture-handler@^2.8.0", "react-native-gesture-handler@>= 1.0.0":
+  "integrity" "sha512-poOSfz/w0IyD6Qwq7aaIRRfEaVTl1ecQFoyiIbpOpfNTjm2B1niY2FLrdVQIOtIOe+K9nH55Qal04nr4jGkHdQ=="
+  "resolved" "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.8.0.tgz"
+  "version" "2.8.0"
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     "hoist-non-react-statics" "^3.3.0"
@@ -6298,7 +6303,7 @@
     "react-shallow-renderer" "^16.13.1"
     "scheduler" "^0.20.2"
 
-"react@*", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.13.1 || ^17.0.1", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.0", "react@> 16.7.0", "react@>=16.0", "react@17.0.2":
+"react@*", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.13.1 || ^17.0.1", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.0", "react@^17.0.2", "react@> 16.7.0", "react@>=16.0", "react@17.0.2":
   "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
   "version" "17.0.2"

@@ -30,6 +30,7 @@ import ShortQ from '../Surveys/ShortQ';
 import FreeQ from '../Surveys/FreeQ';
 import ReactionTime from '../Surveys/ReactionTime';
 import EmpaticaCue from '../Surveys/EmpaticaCue';
+import FlowDrawing from '../Surveys/FlowDrawing';
 
 const confidenceMap = {
     1: 'very rough',
@@ -100,6 +101,10 @@ function StartDaySurvey(props){
     const [challenged, setChallenged] = useState(-1);
     const [competent, setCompetent] = useState(-1);
 
+    const [scrollEnabled, setScrollEnabled] = useState(true);	
+    const [flowPath, setFlowPath] = useState([]);	
+    const [flowCanvasSize, setFlowCanvasSize] = useState(null);	
+
     const [freeEmotion, setFreeEmotion] = useState('');	
     const [freeFood, setFreeFood] = useState('');	
     const [freeAdditional, setFreeAdditional] = useState('');	
@@ -112,11 +117,12 @@ function StartDaySurvey(props){
 		    <Text style={{fontWeight:'bold', padding:15}}> Start Day Survey </Text>
 	    </View>
 
-	    <ScrollView keyboardShouldPersistTaps='handled'>
+	    <ScrollView keyboardShouldPersistTaps='handled' scrollEnabled={scrollEnabled}>
+	    
+	    <FlowDrawing setScrollEnabled={setScrollEnabled} setPath={setFlowPath} setCanvasSize={setFlowCanvasSize}/>
 
 	    {!doneTime && <>
 
-	    <EmpaticaCue start={true} setter={setEmpaticaTime}/>
 
 	    <Text style={{paddingBottom:30, paddingTop:60}}> 
 		1. Please only participate today if it's a 'regular day' for you (you're working, no unusual stressors or major commitements).
@@ -163,6 +169,8 @@ function StartDaySurvey(props){
             <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {props.onSubmitted([
+		        'flowPath', String(flowPath),
+		    	'flowCanvasSize', String(flowCanvasSize.width) + ',' + String(flowCanvasSize.height),
 			'nowAlertness', nowAlertness,
 			'nowStress', nowStress,
 			'nowEmotion', nowEmotion,
