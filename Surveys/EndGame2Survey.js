@@ -25,11 +25,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import TimeInput from '@tighten/react-native-time-input';
 import Slider from "@react-native-community/slider";
 
-import LongQ from '../Surveys/LongQ';
-import ShortQ from '../Surveys/ShortQ';
-import FreeQ from '../Surveys/FreeQ';
-import ReactionTime from '../Surveys/ReactionTime';
-import EmpaticaCue from '../Surveys/EmpaticaCue';
+import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
+import LongQ from '../Surveys/Questions/LongQ';
+import ShortQ from '../Surveys/Questions/ShortQ';
+import FreeQ from '../Surveys/Questions/FreeQ';
+import ReactionTime from '../Surveys/Questions/ReactionTime';
 
 const confidenceMap = {
     1: 'very rough',

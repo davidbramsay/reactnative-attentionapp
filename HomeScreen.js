@@ -85,14 +85,14 @@ function HomeScreen(props) {
         <TouchableOpacity
           style={styles.bigbuttonStyleWide}
           activeOpacity={0.5}
-          onPress={() => props.navigation.navigate("WorkingSession")}>
+          onPress={() => props.navigation.navigate("HomeSession1")}>
 	    <View style={{flexDirection:'row', justifyContent:'center'}}>
             <Image source={require('./icons/sun-glasses.png')}
                 style={{height:'80%', width: undefined, aspectRatio:1}}/>
             <Image source={require('./icons/wristwatch.png')}
                 style={{height:'80%', width: undefined, aspectRatio:1}}/>
 	    </View>
-            <Text style={{fontSize:16}}>Working Session</Text>
+            <Text style={{fontSize:16}}>Home #1 -- Evening</Text>
         </TouchableOpacity>
         </View>
 
@@ -100,14 +100,29 @@ function HomeScreen(props) {
         <TouchableOpacity
           style={styles.bigbuttonStyleWide}
           activeOpacity={0.5}
-          onPress={() => props.navigation.navigate("VideogameSession")}>
+          onPress={() => props.navigation.navigate("HomeSession2")}>
 	    <View style={{flexDirection:'row', justifyContent:'center'}}>
             <Image source={require('./icons/sun-glasses.png')}
                 style={{height:'80%', width: undefined, aspectRatio:1}}/>
             <Image source={require('./icons/wristwatch.png')}
                 style={{height:'80%', width: undefined, aspectRatio:1}}/>
 	    </View>
-            <Text style={{fontSize:16}}>Video Game Session</Text>
+            <Text style={{fontSize:16}}>Home #2 -- Morning</Text>
+        </TouchableOpacity>
+        </View>
+
+        <View style={{height:150, width:'100%', flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+        <TouchableOpacity
+          style={styles.bigbuttonStyleWide}
+          activeOpacity={0.5}
+          onPress={() => props.navigation.navigate("LabSession")}>
+	    <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <Image source={require('./icons/sun-glasses.png')}
+                style={{height:'80%', width: undefined, aspectRatio:1}}/>
+            <Image source={require('./icons/wristwatch.png')}
+                style={{height:'80%', width: undefined, aspectRatio:1}}/>
+	    </View>
+            <Text style={{fontSize:16}}>Lab Session</Text>
         </TouchableOpacity>
         </View>
 

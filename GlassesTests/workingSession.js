@@ -25,6 +25,7 @@ import { AppState } from 'react-native';
 import Modal from "react-native-modal";
 
 import StartDaySurvey from "../Surveys/StartDaySurvey";
+import LabStartSurvey from "../Surveys/LabStartSurvey";
 import WorkdayLightSurvey from "../Surveys/WorkdayLightSurvey";
 import EndWorkdaySurvey from "../Surveys/EndWorkdaySurvey";
 
@@ -409,7 +410,7 @@ export default class WorkingSession extends React.Component {
                     UPLOADING... please wait. 
                 </Text>
 	    </>:<>
-		{this.state.currentState==0 && <StartDaySurvey    
+		{this.state.currentState==0 && <LabStartSurvey
 		    onSubmitted={(surveyResults, endTest) => {this.surveyDone(surveyResults, endTest);}}/>}
 		{this.state.currentState==2 && <WorkdayLightSurvey    
 		    onSubmitted={(surveyResults, endTest) => {this.surveyDone(surveyResults, endTest);}}/>}

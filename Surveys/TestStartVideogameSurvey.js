@@ -23,9 +23,12 @@ import {
 
 import TimeInput from '@tighten/react-native-time-input';
 import Slider from "@react-native-community/slider";
-import FreeQ from '../Surveys/FreeQ';
-import ReactionTime from '../Surveys/ReactionTime';
-import EmpaticaCue from '../Surveys/EmpaticaCue';
+import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
+import LongQ from '../Surveys/Questions/LongQ';
+import ShortQ from '../Surveys/Questions/ShortQ';
+import FreeQ from '../Surveys/Questions/FreeQ';
+import ReactionTime from '../Surveys/Questions/ReactionTime';
+import FlowDrawing from '../Surveys/Questions/FlowDrawing';
 
 const confidenceMap = {
     1: 'very rough',

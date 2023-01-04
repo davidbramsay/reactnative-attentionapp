@@ -33,8 +33,11 @@ import FileSelector from "./FileSelector";
 import GlassesCalibrate from "./GlassesTests/glassesCalibrate";
 import GlassesDataStream from "./GlassesDataStream";
 import GlassesTest from "./GlassesTests/glassesTest";
-import WorkingSession from "./GlassesTests/workingSession";
-import VideogameSession from "./GlassesTests/videogameSession";
+//import WorkingSession from "./GlassesTests/workingSession";
+//import VideogameSession from "./GlassesTests/videogameSession";
+import LabSession from "./GlassesTests/labSession";
+import HomeSession1 from "./GlassesTests/homeSession1";
+import HomeSession2 from "./GlassesTests/homeSession2";
 import VideogamePrototype from "./GlassesTests/videogamePrototype";
 import PavlokCalibrate from "./PavlokTests/pavlokCalibrate";
 import PavlokTest from "./PavlokTests/pavlokTest";
@@ -860,7 +863,7 @@ function App() {
         //Found an unconnected watch or glasses!
         if ((device.name === 'CAPTIVATE' && !glassesReady()) ||
             (device.name.includes('Pavlok')  && !pavlokReady()) ||
-	    (['WATCH01', 'DRAMSAY'].includes(device.name) && !watchReady())) {
+	    (['STM32WB', 'WATCH01', 'DRAMSAY'].includes(device.name) && !watchReady())) {
             try{
                 console.log('stopping scan');
     	    	setBleScanning(false);
@@ -1123,7 +1126,8 @@ function App() {
 		/>}
 	    </Stack.Screen>
 
-	    <Stack.Screen name="WorkingSession" options={{title: "Working Session"}}>
+
+	    {/*<Stack.Screen name="WorkingSession" options={{title: "Working Session"}}>
 		{(props) => <WorkingSession {...props}
 		    glassesStatus={glassesBleState}
 		    pavlokStatus={pavlokBleState}
@@ -1148,6 +1152,75 @@ function App() {
 
 	    <Stack.Screen name="VideogameSession" options={{title: "Video Game Session"}}>
 		{(props) => <VideogameSession {...props}
+		    glassesStatus={glassesBleState}
+		    pavlokStatus={pavlokBleState}
+		    watchStatus={watchBleState}
+		    firebaseSignedIn={userInitialized}
+		    username={username}
+		    setUsername={setAndSaveUsername}
+
+		    sendLEDUpdate={sendLEDUpdate}
+
+		    startLogging={startLogging}	
+		    stopLogging={stopLogging}	
+		    sendToStorage={sendToStorage}
+		    log={log}
+		    dataLog={dataLog}
+
+		    connect={connect}
+		    scanning={bleScanning}	
+		    setScanning={setBleScanning}	
+		/>}
+	    </Stack.Screen>*/}
+
+	    <Stack.Screen name="HomeSession1" options={{title: "Home Session #1"}}>
+		{(props) => <HomeSession1 {...props}
+		    glassesStatus={glassesBleState}
+		    pavlokStatus={pavlokBleState}
+		    watchStatus={watchBleState}
+		    firebaseSignedIn={userInitialized}
+		    username={username}
+		    setUsername={setAndSaveUsername}
+
+		    sendLEDUpdate={sendLEDUpdate}
+
+		    startLogging={startLogging}	
+		    stopLogging={stopLogging}	
+		    sendToStorage={sendToStorage}
+		    log={log}
+		    dataLog={dataLog}
+
+		    connect={connect}
+		    scanning={bleScanning}	
+		    setScanning={setBleScanning}	
+		/>}
+	    </Stack.Screen>
+
+	    <Stack.Screen name="HomeSession2" options={{title: "Home Session #2"}}>
+		{(props) => <HomeSession2 {...props}
+		    glassesStatus={glassesBleState}
+		    pavlokStatus={pavlokBleState}
+		    watchStatus={watchBleState}
+		    firebaseSignedIn={userInitialized}
+		    username={username}
+		    setUsername={setAndSaveUsername}
+
+		    sendLEDUpdate={sendLEDUpdate}
+
+		    startLogging={startLogging}	
+		    stopLogging={stopLogging}	
+		    sendToStorage={sendToStorage}
+		    log={log}
+		    dataLog={dataLog}
+
+		    connect={connect}
+		    scanning={bleScanning}	
+		    setScanning={setBleScanning}	
+		/>}
+	    </Stack.Screen>
+
+	    <Stack.Screen name="LabSession" options={{title: "Lab Session"}}>
+		{(props) => <LabSession {...props}
 		    glassesStatus={glassesBleState}
 		    pavlokStatus={pavlokBleState}
 		    watchStatus={watchBleState}
