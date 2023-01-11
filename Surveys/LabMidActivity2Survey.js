@@ -32,8 +32,8 @@ function LabMidActivity2Survey(props){
     const [actualTimeAtDuration, setActualTimeAtDuration] = useState('');	
 
     const handleDurChange = (duration) => {
-	    if (duration > 0 && duration < 241){
-		    setDur(String(duration));
+	    if (parseInt(duration) > 0 && parseInt(duration) < 241 || duration ==''){
+		    setDur(duration);
 	    }	
     }
 	
@@ -58,7 +58,7 @@ function LabMidActivity2Survey(props){
 	    <TextInput
 	    keyboardType="number-pad"
       	    maxLength={3}
-	    onChangeText={text => handleDurChange(parseInt(text))}
+	    onChangeText={text => handleDurChange(text)}
 	    placeholder="00"
 	    value={dur}
 	    style={{

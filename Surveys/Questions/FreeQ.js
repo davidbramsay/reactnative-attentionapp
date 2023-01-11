@@ -21,8 +21,6 @@ import {
   Image,
 } from "react-native";
 
-import Slider from "@react-native-community/slider";
-
 function FreeQ(props){
 
     return (

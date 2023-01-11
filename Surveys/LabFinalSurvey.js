@@ -23,6 +23,7 @@ import {
 import SurveyPARTEmotion from '../Surveys/Questions/SurveyPARTEmotion';
 import SurveyPARTFlow from '../Surveys/Questions/SurveyPARTFlow';
 import SurveyPARTThriving from '../Surveys/Questions/SurveyPARTThriving';
+import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
 
 function LabFinalSurvey(props){
 
@@ -30,6 +31,7 @@ function LabFinalSurvey(props){
     const [emotionResults, setEmotionResults] = useState([]);	
     const [flowResults, setFlowResults] = useState([]);	
     const [thrivingResults, setThrivingResults] = useState([]);	
+    const [empaticaTime, setEmpaticaTime] = useState("");	
 
     return (
 	<>
@@ -42,6 +44,7 @@ function LabFinalSurvey(props){
 	    <SurveyPARTFlow setScrollEnabled={setScrollEnabled} setter={setFlowResults}/>
 	    <SurveyPARTEmotion shorten={true} setter={setEmotionResults}/>
 	    <SurveyPARTThriving setter={setThrivingResults}/>
+	    <EmpaticaCue start={false} setter={setEmpaticaTime}/>
 
 	    <Text style={{textAlign:'center', padding:10}}> You are done with the session!</Text>
 
@@ -51,6 +54,7 @@ function LabFinalSurvey(props){
             <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {props.onSubmitted([
+			'empaticaEndTime', empaticaTime,
 		    	...flowResults,
 		        ...emotionResults,
 		    ], false);}}>

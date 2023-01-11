@@ -21,15 +21,12 @@ import {
   Image,
 } from "react-native";
 
-import Slider from "@react-native-community/slider";
-
 function LikertQ5(props){
     
     const [radioState, setRadioState] = useState(null);	
 
      	
     useEffect(() => {
-	    console.log('radio update');
 	    props.setter(radioState);
     }, [radioState]);
 
@@ -38,12 +35,6 @@ function LikertQ5(props){
 	    {props.text && <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
 		    <Text>{props.text}</Text>
             </View>}
-
-	    {/*<View style={{width:"100%", padding:5, paddingBottom:0, flexDirection:'row'}}>
-	      <Text style={{fontSize:11, width:"33%"}}>{props.lowText}</Text>
-              <Text style={{fontSize:11, width:"33%", textAlign:'center'}}>neutral</Text>
-              <Text style={{fontSize:11, width:"33%", textAlign:'right'}}>{props.highText}</Text>
-	    </View>*/}
 
 	    <View style={{width:"100%", padding:5, paddingBottom:10, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
 

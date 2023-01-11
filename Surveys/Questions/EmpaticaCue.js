@@ -68,9 +68,18 @@ function EmpaticaCue(props){
             </View>
 
 	    {done ? <>
-	    <View style={{width:"100%", minHeight:75, padding:5, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
+	    <View style={{width:"100%", minHeight:85, padding:5, flexDirection:'column', justifyContent:"center", alignItems:'center'}}>
 		    <Text style={{fontWeight:"bold", paddingBottom:5}}>DONE! Thank you!</Text>
 	    	
+		<TouchableOpacity
+		  style={{width:'35%', height:40, padding:5, justifyContent:"center", alignItems:"center"}}
+		  activeOpacity={0.5}
+		  onPress={() => {setDone(false); setCount(3); setCounting(false);}}>
+                <Text style={{width:'100%', padding:0, height:'100%', borderColor: '#7a42f4', 
+			      borderWidth: 1, textAlign:'center', fontSize:20}}>
+			re-do.
+                </Text>
+		</TouchableOpacity>
 	    </View>
 	    </>:<>
 	    <View style={{width:"100%", minHeight:75, padding:5, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>

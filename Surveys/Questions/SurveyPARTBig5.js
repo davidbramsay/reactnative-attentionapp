@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  FlatList,	
   View,
   Text,
   StatusBar,
@@ -156,7 +157,12 @@ function SurveyPARTBig5(props){
 	BFI40, BFI41, BFI42, BFI43, BFI44, BFI45, BFI46, BFI47, BFI48, BFI49,
 	BFI50, BFI51, BFI52, BFI53, BFI54, BFI55, BFI56, BFI57, BFI58, BFI59]);
 
-    return (
+    const renderItem = ({ item }) => {
+      return(	    
+	    <LikertQ5 setter={item.setter} text={item.text} lowText="disagree" highText="agree"/>
+    )};
+
+    return (	
 	<>
             <View style={{width:"100%", padding:5, paddingTop:40, alignItems:'flex-start'}}>
 	    	    <Text style={{textAlign:'justify'}}>Here are several characteristics that may or may not apply to you. Please rate each statement from (strongly agree/agree a little/neutral/disagree a little/strongly disagree):
@@ -164,66 +170,71 @@ function SurveyPARTBig5(props){
 		    <Text style={{fontWeight:'bold'}}>{"\n\n"} I am someone who...</Text>
             </View>
 
-	    <LikertQ5 setter={setBFI0} text="is outgoing,sociable." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI1} text="is compassionate, has a soft heart." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI2} text="tends to be disorganized." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI3} text="is relaxed, handles stress well." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI4} text="has few artistic interests." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI5} text="has an assertive personality." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI6} text="is respectful, treats others with respect." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI7} text="tends to be lazy." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI8} text="stays optimistic after experiencing a setback." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI9} text="is curious about many different things." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI10} text="rarely feels excited or eager." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI11} text="tends to find fault with others." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI12} text="is dependable, steady." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI13} text="is moody, has up and down mood swings." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI14} text="is inventive, finds clever ways to do things." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI15} text="tends to be quiet." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI16} text="feels little sympathy for others." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI17} text="is systematic, likes to keep things in order." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI18} text="can be tense." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI19} text="is fascinated by art, music, or literature." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI20} text="is dominant, acts as a leader." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI21} text="starts arguments with others." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI22} text="has difficulty getting started on tasks." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI23} text="feels secure, comfortable with self." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI24} text="avoids intellectual, philosophical discussions." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI25} text="is less active than other people." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI26} text="has a forgiving nature." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI27} text="can be somewhat careless." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI28} text="is emotionally stable, not easily upset." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI29} text="has little creativity." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI30} text="is sometimes shy, introverted." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI31} text="is helpful and unselfish with others." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI32} text="keeps things neat and tidy." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI33} text="worries a lot." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI34} text="values art and beauty." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI35} text="finds it hard to influence people." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI36} text="is sometimes rude to others." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI37} text="is efficient, gets things done." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI38} text="often feels sad." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI39} text="is complex, a deep thinker." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI40} text="is full of energy." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI41} text="is suspicious of others' intentions." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI42} text="is reliable, can always be counted on." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI43} text="keeps their emotions under control." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI44} text="has difficulty imagining things." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI45} text="is talkative." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI46} text="can be cold and uncaring." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI47} text="leaves a mess, doesn't clean up." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI48} text="rarely feels anxious or afraid." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI49} text="thinks poetry and plays are boring." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI50} text="prefers to have others take charge." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI51} text="is polite, courteous to others." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI52} text="is persistent, works until the task is finished." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI53} text="tends to feel depressed, blue." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI54} text="has little interest in abstract ideas." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI55} text="shows a lot of enthusiasm." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI56} text="assumes the best about people." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI57} text="sometimes behaves irresponsibly." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI58} text="is temperamental, gets emotional easily." lowText="disagree" highText="agree"/>
-	    <LikertQ5 setter={setBFI59} text="is original, comes up with new ideas." lowText="disagree" highText="agree"/>
+	    <FlatList
+		data={[
+		{setter:setBFI0, text:"is outgoing,sociable."},
+	    	{setter:setBFI1, text:"is compassionate, has a soft heart."},
+	    	{setter:setBFI2, text:"tends to be disorganized."},
+	    	{setter:setBFI3, text:"is relaxed, handles stress well."},
+	    	{setter:setBFI4, text:"has few artistic interests."},
+	    	{setter:setBFI5, text:"has an assertive personality."},
+	    	{setter:setBFI6, text:"is respectful, treats others with respect."},
+	    	{setter:setBFI7, text:"tends to be lazy."},
+	    	{setter:setBFI8, text:"stays optimistic after experiencing a setback."},
+	    	{setter:setBFI9, text:"is curious about many different things."},
+	    	{setter:setBFI10, text:"rarely feels excited or eager."},
+	    	{setter:setBFI11, text:"tends to find fault with others."},
+	    	{setter:setBFI12, text:"is dependable, steady."},
+	    	{setter:setBFI13, text:"is moody, has up and down mood swings."},
+	    	{setter:setBFI14, text:"is inventive, finds clever ways to do things."},
+	    	{setter:setBFI15, text:"tends to be quiet."},
+	    	{setter:setBFI16, text:"feels little sympathy for others."},
+	    	{setter:setBFI17, text:"is systematic, likes to keep things in order."},
+	    	{setter:setBFI18, text:"can be tense."},
+	    	{setter:setBFI19, text:"is fascinated by art, music, or literature."},
+	    	{setter:setBFI20, text:"is dominant, acts as a leader."},
+	    	{setter:setBFI21, text:"starts arguments with others."},
+	    	{setter:setBFI22, text:"has difficulty getting started on tasks."},
+	    	{setter:setBFI23, text:"feels secure, comfortable with self."},
+	    	{setter:setBFI24, text:"avoids intellectual, philosophical discussions."},
+	    	{setter:setBFI25, text:"is less active than other people."},
+	    	{setter:setBFI26, text:"has a forgiving nature."},
+	    	{setter:setBFI27, text:"can be somewhat careless."},
+	    	{setter:setBFI28, text:"is emotionally stable, not easily upset."},
+	    	{setter:setBFI29, text:"has little creativity."},
+	    	{setter:setBFI30, text:"is sometimes shy, introverted."},
+	    	{setter:setBFI31, text:"is helpful and unselfish with others."},
+	    	{setter:setBFI32, text:"keeps things neat and tidy."},
+	    	{setter:setBFI33, text:"worries a lot."},
+	    	{setter:setBFI34, text:"values art and beauty."},
+	    	{setter:setBFI35, text:"finds it hard to influence people."},
+	    	{setter:setBFI36, text:"is sometimes rude to others."},
+	    	{setter:setBFI37, text:"is efficient, gets things done."},
+	    	{setter:setBFI38, text:"often feels sad."},
+	    	{setter:setBFI39, text:"is complex, a deep thinker."},
+	    	{setter:setBFI40, text:"is full of energy."},
+	    	{setter:setBFI41, text:"is suspicious of others' intentions."},
+	    	{setter:setBFI42, text:"is reliable, can always be counted on."},
+	    	{setter:setBFI43, text:"keeps their emotions under control."},
+	    	{setter:setBFI44, text:"has difficulty imagining things."},
+	    	{setter:setBFI45, text:"is talkative."},
+	    	{setter:setBFI46, text:"can be cold and uncaring."},
+	    	{setter:setBFI47, text:"leaves a mess, doesn't clean up."},
+	    	{setter:setBFI48, text:"rarely feels anxious or afraid."},
+	    	{setter:setBFI49, text:"thinks poetry and plays are boring."},
+	    	{setter:setBFI50, text:"prefers to have others take charge."},
+	    	{setter:setBFI51, text:"is polite, courteous to others."},
+	    	{setter:setBFI52, text:"is persistent, works until the task is finished."},
+	    	{setter:setBFI53, text:"tends to feel depressed, blue."},
+	    	{setter:setBFI54, text:"has little interest in abstract ideas."},
+	    	{setter:setBFI55, text:"shows a lot of enthusiasm."},
+	    	{setter:setBFI56, text:"assumes the best about people."},
+	    	{setter:setBFI57, text:"sometimes behaves irresponsibly."},
+	    	{setter:setBFI58, text:"is temperamental, gets emotional easily."},
+	    	{setter:setBFI59, text:"is original, comes up with new ideas."}
+		]}
+	        renderItem={renderItem}
+	    />
 
 	</>
     );

@@ -97,7 +97,45 @@ const Stack = createStackNavigator();
 const bleManager = new BleManager();
 const NUM_TO_PLOT = 100;
 
+const PLOT_EVERYN_BLINK = 3;
+const PLOT_EVERYN_ACC = 2;
+const PLOT_EVERYN_GYRO = 2;
+
+
 const dataCollection = firestore().collection('data');
+
+const usePrevious = (value, initialValue) => {
+  const ref = useRef(initialValue);
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
+
+const useEffectDebugger = (effectHook, dependencies, dependencyNames = []) => {
+  const previousDeps = usePrevious(dependencies, []);
+
+  const changedDeps = dependencies.reduce((accum, dependency, index) => {
+    if (dependency !== previousDeps[index]) {
+      const keyName = dependencyNames[index] || index;
+      return {
+        ...accum,
+        [keyName]: {
+          before: previousDeps[index],
+          after: dependency
+        }
+      };
+    }
+
+    return accum;
+  }, {});
+
+  if (Object.keys(changedDeps).length) {
+    console.log('[use-effect-debugger] ', changedDeps);
+  }
+
+  useEffect(effectHook, dependencies);
+};
 
 function App() {
 
@@ -110,6 +148,10 @@ function App() {
 
     const [streamDataUI, setStreamDataUI] = useState(false);	
     const streamDataUIref = useRef(false);
+
+    const streamDataUIRenderEveryNCountBlink = useRef(0);	
+    const streamDataUIRenderEveryNCountGyro = useRef(0);	
+    const streamDataUIRenderEveryNCountAcc = useRef(0);	
 
     const [glassesBlinkData, setGlassesBlinkData] = useState(Array(1000).fill(0));
     const [glassesThermalData, setGlassesThermalData] = useState(Array(300).fill([0,0]));
@@ -169,21 +211,51 @@ function App() {
         },
     });
 
+    useEffect(()=>{
+	console.log('---------');    
+	console.log(streamDataUIref.current);
+    }, [glassesBlinkData]);
+
+    /*
+    useEffectDebugger(()=> {}, [ 	
+	    userInitialized,
+	    user,
+	    username,
+	    dataArray,
+	    streamDataUI,
+	    glassesBlinkData,
+	    glassesThermalData,
+	    glassesAccData,
+	    glassesGyroData,
+	    packetCount,
+	    watchPaused,
+	    watchTimeBounds,
+	    firestoreInitialized,
+	    glassesBleState,
+	    pavlokBleState,
+	    watchBleState,
+	    pavlokBattery,
+	    pavlokMinStrength,
+	    pavlokTimeOn,
+	    bleScanning
+    ]);
+    */
+
     function updatePavlokBattery(key, value) {
         var decval = parseInt(base64ToHex(value), 16);
         console.log('update ' + key + ' : ' + decval)
         setPavlokBattery(decval);
     }
 
-	function getEveryNth(arr, nth) {
-	  const result = [];
+    function getEveryNth(arr, nth) {
+      const result = [];
 
-	  for (let i = 0; i < arr.length; i += nth) {
-	    result.push(arr[i]);
-	  }
+      for (let i = 0; i < arr.length; i += nth) {
+        result.push(arr[i]);
+      }
 
-	  return result;
-	}
+      return result;
+    }
 
 
     function updateWatchData(dataArray){
@@ -241,9 +313,7 @@ function App() {
 	//console.log(parsedPayload); //i.e. [5, 92, 38148, 0, 200, NaN, NaN, NaN, NaN, NaN]
 	//packetType, packetNum, msFromStart, epoch, PacketSize
 	
-	streamDataUIref.current += 1;	
-	let THRESH = 2;	
-	if (streamDataUIref.current > THRESH) streamDataUIref == 1;	
+		
 
 	switch(parsedPayload[0]){
 
@@ -256,10 +326,13 @@ function App() {
 			if (fileOpen.current != null){
 				dataLog('g',['b', ...parsedPayload, 'PAYLOAD', ...blinkData]);
 			}
-			
-			if (streamDataUIref.current >= THRESH){
 
-				setGlassesBlinkData((prev) => [...prev.slice(blinkData.length), ...blinkData]);
+			if (streamDataUIref.current){
+				streamDataUIRenderEveryNCountBlink.current += 1;
+				if (streamDataUIRenderEveryNCountBlink.current >= PLOT_EVERYN_BLINK){
+					setGlassesBlinkData((prev) => [...prev.slice(blinkData.length), ...blinkData]);
+					streamDataUIRenderEveryNCountBlink.current = 0;
+				} 
 			}/* else{
 				setPacketCount(prev => ({...prev, blink: prev.blink + 1}));
 			}*/
@@ -288,7 +361,7 @@ function App() {
 			}
 
 			
-			if (streamDataUIref.current >= THRESH){	
+			if (streamDataUIref.current){	
 
 				//for now, we can pull temple_tp and nose_tp to plot
 				// temple_tp = [0,3,6,9,12]; nose_tp = [15,18,21,24,27]
@@ -314,19 +387,22 @@ function App() {
 				dataLog('g',['a', ...parsedPayload, 'PAYLOAD', ...accData]);
 			}
 
-			if (streamDataUIref.current >= THRESH){
-
-				let accPlotVals = [];
-				for (let i=0; i<25; i++){
-					accPlotVals.push(accData.slice(i*5,i*5+3));
-				}
-
-				setGlassesAccData((prev) => [...prev.slice(accPlotVals.length), ...accPlotVals]);
+			if (streamDataUIref.current){
+				streamDataUIRenderEveryNCountAcc.current += 1;
+				if (streamDataUIRenderEveryNCountAcc.current >= PLOT_EVERYN_ACC){
+					let accPlotVals = [];
+					for (let i=0; i<25; i++){
+						accPlotVals.push(accData.slice(i*5,i*5+3));
+					}
+					setGlassesAccData((prev) => [...prev.slice(accPlotVals.length), ...accPlotVals]);
+					streamDataUIRenderEveryNCountAcc.current = 0;
+				} 
 			}/* else{
 				setPacketCount(prev => ({...prev, acc: prev.acc + 1}));
 			}*/
 
 			break;
+
 		case 9:
 
 		        var gyroData = struct.unpack(
@@ -338,17 +414,19 @@ function App() {
 				dataLog('g',['g', ...parsedPayload, 'PAYLOAD', ...gyroData]);
 			}
 
-			if (streamDataUIref.current >= THRESH){
-
-				let gyroPlotVals = [];
-				for (let i=0; i<25; i++){
-					gyroPlotVals.push(gyroData.slice(i*5,i*5+3));
-				}
-
-				setGlassesGyroData((prev) => [...prev.slice(gyroPlotVals.length), ...gyroPlotVals]);
+			if (streamDataUIref.current){
+				streamDataUIRenderEveryNCountGyro.current += 1;
+				if (streamDataUIRenderEveryNCountGyro.current >= PLOT_EVERYN_GYRO){
+					let gyroPlotVals = [];
+					for (let i=0; i<25; i++){
+						gyroPlotVals.push(gyroData.slice(i*5,i*5+3));
+					}
+					setGlassesGyroData((prev) => [...prev.slice(gyroPlotVals.length), ...gyroPlotVals]);
+					streamDataUIRenderEveryNCountGyro.current = 0;
+				} 
 			}/* else{
-				setPacketCount(prev => ({...prev, gyro: prev.gyro + 1}));
-			}*/	
+				setPacketCount(prev => ({...prev, acc: prev.acc + 1}));
+			}*/
 
 			break;
 
@@ -356,6 +434,7 @@ function App() {
 			console.error('UNKOWN PACKET TYPE');
 	}
 	}catch(e){
+		console.error(e);
 	   console.error('Failed to read BLE packet from Glasses, likely unpack failure');
 	}
 	
@@ -714,6 +793,7 @@ function App() {
     }
 
     useEffect(() => {
+	console.log('UPDATE STREAMDATAUI:' + streamDataUI);    
         streamDataUIref.current = streamDataUI;
     }, [streamDataUI])
 
@@ -1102,6 +1182,7 @@ function App() {
     }
 
 
+    console.log('RERENDER APP');	
     //--RENDER--//
     return (
 	<>

@@ -42,6 +42,7 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  FlatList	
 } from "react-native";
 
 
@@ -53,7 +54,7 @@ export default class LabSession extends React.Component {
   constructor(props) {
     super(props);
     this.state = {intensity: 170, startBlue: 70, bIntensity: 50, notes: '',
-                  mainInterval: 20, stepInterval: 300, testRunning: false, 
+                  mainInterval: 12.5, stepInterval: 300, testRunning: false, 
 	    	  currentState:0,
 	          popover: true, uploading: false};
     this.timer = null;
@@ -85,6 +86,18 @@ export default class LabSession extends React.Component {
   }
 
   componentDidUpdate = (nextProps) => {
+
+    /*	  
+    console.log('triggering rerender');	  
+
+    for (const [key, value] of Object.entries(nextProps)) {
+	  if (value != this.props[key]){  
+		  console.log('CHANGE DETECTED: ' + key);
+	 	  console.log(value);
+	  }
+    }
+    */
+
     //on change of glassesStatus or watchStatus...	  
     if (nextProps.glassesStatus !== this.props.glassesStatus || nextProps.watchStatus !== this.props.watchStatus) {
 	console.log('Got status update');
@@ -434,8 +447,9 @@ export default class LabSession extends React.Component {
   }
 
   render() {
+    console.log('rerender');	  
     return (
-      <ScrollView>
+      <View style={{flex:1}}>
 	 <NavCallbackComponent {...this.props}/>   
 
 	 <Modal isVisible={this.state.popover} propogateSwipe backdropOpacity={1.0} backdropColor="white">
@@ -469,7 +483,7 @@ export default class LabSession extends React.Component {
         </Modal>
 
 
-
+	<ScrollView>
         <View style={styles.viewContainer}>
           <View style={{height:115, width:'100%'}}>
 
@@ -536,6 +550,7 @@ export default class LabSession extends React.Component {
 
         </View>
       </ScrollView>
+</View>
     )
   }
 };

@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  FlatList,	
   View,
   Text,
   StatusBar,
@@ -50,22 +51,32 @@ function SurveyPARTThriving(props){
 	    ]);
     }, [BIT0, BIT1, BIT2, BIT3, BIT4, BIT5, BIT6, BIT7, BIT8, BIT9]);	
 
+    const renderItem = ({ item }) => {
+      return(	    
+	    <LikertQ setter={item.setter} text={item.text} lowText="disagree" highText="agree"/>
+    )};
+
     return (
 	<>
             <View style={{width:"100%", padding:5, paddingTop:40, alignItems:'flex-start'}}>
 		    <Text style={{fontWeight:'bold'}}>Rate the following from strongly disagree to strongly agree:</Text>
             </View>
 
-	    <LikertQ text="There are people who appreciate me as a person." lowText="disagree" highText="agree" setter={setBIT0}/>
-	    <LikertQ text="I feel a sense of belonging in my community." lowText="disagree" highText="agree" setter={setBIT1}/>
-	    <LikertQ text="In most activities I do, I feel energized." lowText="disagree" highText="agree" setter={setBIT2}/>
-	    <LikertQ text="I am achieving most of my goals." lowText="disagree" highText="agree" setter={setBIT3}/>
-	    <LikertQ text="I can succeed if I put my mind to it." lowText="disagree" highText="agree" setter={setBIT4}/>
-	    <LikertQ text="What I do in life is valuable and worthwhile." lowText="disagree" highText="agree" setter={setBIT5}/>
-	    <LikertQ text="My life has a clear sense of purpose." lowText="disagree" highText="agree" setter={setBIT6}/>
-	    <LikertQ text="I am optimistic about the future." lowText="disagree" highText="agree" setter={setBIT7}/>
-	    <LikertQ text="My life is going well." lowText="disagree" highText="agree" setter={setBIT8}/>
-	    <LikertQ text="I feel good most of the time." lowText="disagree" highText="agree" setter={setBIT9}/>
+	    <FlatList
+		data={[
+			{text:"There are people who appreciate me as a person.", setter:setBIT0},
+	    		{text:"I feel a sense of belonging in my community.", setter:setBIT1},
+	    		{text:"In most activities I do, I feel energized.", setter:setBIT2},
+	    		{text:"I am achieving most of my goals.", setter:setBIT3},
+	    		{text:"I can succeed if I put my mind to it.", setter:setBIT4},
+	    		{text:"What I do in life is valuable and worthwhile.", setter:setBIT5},
+	    		{text:"My life has a clear sense of purpose.", setter:setBIT6},
+	    		{text:"I am optimistic about the future.", setter:setBIT7},
+	    		{text:"My life is going well.", setter:setBIT8},
+	    		{text:"I feel good most of the time.", setter:setBIT9}
+		]}
+	        renderItem={renderItem}
+	    />
 
 	</>
     );
