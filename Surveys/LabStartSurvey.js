@@ -26,10 +26,14 @@ import {
 import SurveyPARTDemographics from '../Surveys/Questions/SurveyPARTDemographics';
 import SurveyPARTFlowBackground from '../Surveys/Questions/SurveyPARTFlowBackground';
 import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
+import ChecklistItem from '../Surveys/Questions/ChecklistItem';
 import RecordingCue from '../Surveys/Questions/RecordingCue';
 import SurveyPARTThriving from '../Surveys/Questions/SurveyPARTThriving';
 import SurveyPARTTellegen from '../Surveys/Questions/SurveyPARTTellegen';
 //import SurveyPARTBig5 from '../Surveys/Questions/SurveyPARTBig5';
+
+
+
 
 function LabStartSurvey(props){
 
@@ -65,6 +69,10 @@ function LabStartSurvey(props){
 		    </View>
 		     <View style={{padding:10}}/>
 		     </>	
+	        )
+	    } else if (item.type=='checklist'){
+		return(	    
+		    <ChecklistItem boldtext={item.boldtext} text={item.text}/>
 	        )
 	    } else if (item.type=='empaticacue'){
 		return(	    
@@ -128,10 +136,11 @@ function LabStartSurvey(props){
 		    <Text style={{fontWeight:'bold', padding:15}}> Lab Intro Survey</Text>
 	    </View>
 
+	    <Text style={{padding:10}}></Text>
+
 	    <FlatList
 		data={[
-		    {type:"text", text:"Welcome!  Please make sure you have filled out a consent form to start! Then we'll learn how to put on our wearables:"},
-		    {type:"empaticacue"},
+		    {type:"text", text:"Welcome!  Please make sure you have filled out a consent form to start! Then we'll start with a thorough entrance survey:"},
 		    {type:"section", text:" Initial Questions"},	
 		    {type:"surveypartdemographics"}, 
 		    {type:"surveypartflowbackground"}, 
@@ -141,10 +150,22 @@ function LabStartSurvey(props){
 		    {type:"section", text:" Well-being"},	
 		    {type:"surveypartthriving"}, 
 		    {type:"text-stop", text:"Now let the administrator know you are done and they will walk you through a demonstration of the task."},
-		    {type:"section", text:" Demonstration"},
+		    {type:"section", text:"Getting Started Checklist"},
+		    {type:"text", text:"These are the instructions you will follow when you put on the devices at home; please pay attention and ask any questions as you go."},
+		    {type:"checklist", boldtext:"1. Make sure this device is connected to wifi.", text:"(Swipe down on upper right corner to reveal control-panel and check if necessary.)"},	
+		    {type:"checklist", boldtext:"2. Please Silence Your Notifications.", text:""},	
+		    {type:"checklist", boldtext:"3. Put on the watch on your dominant hand.", text:"(It is always on.)"},	
+		    {type:"checklist", boldtext:"4. Turn on the glasses", text:"by sliding the button back towards the temple; its LEDs will flash when it is on."},	
+		    {type:"checklist", boldtext:"5. Put the glasses on.", text:""},	
+		    {type:"empaticacue"},
+		    {type:"section", text:"Tetris Demonstration"},
+		    {type:"text", text:"For the first task, you will be playing tetris.  Let's get set up with Tetris."},	
+		    {type:"checklist", boldtext:"1. Turn on the iPad and open 'Falling Lightblocks'.", text:""},	
+		    {type:"checklist", boldtext:"2. Put on headphones.", text:"(Turn them on with the switch on the right side)"},	
+		    {type:"checklist", boldtext:"3. Turn on the controller by pressing and holding the home button.", text:"(It should light up and connect. If it's not responding, use Bluetooth settings in control panel)"},	
 		    {type:"recordingcue"},			
 		    {type:"text", text:""},
-		    {type:"text", text:"You will be playing Tetris!  Get ready for your session to start-- make sure the game is ready to go, the controller is working, and double check wearables. The administrator will now walk you through the next screen and task."},
+		    {type:"text", text:"You will be playing Tetris!  This first session is just a learning session for you to get comfortable. The administrator will now walk you through the next screen and task."},
 		    {type:"submit"}]}
 	        renderItem={renderItem}
 	    />

@@ -29,8 +29,6 @@ import LabMid1Survey from "../Surveys/LabMid1Survey";
 import LabMid2Survey from "../Surveys/LabMid2Survey";
 import LabFinalSurvey from "../Surveys/LabFinalSurvey";
 import LabMidActivitySurvey from "../Surveys/LabMidActivitySurvey";
-import LabMidActivity2Survey from "../Surveys/LabMidActivity2Survey";
-
 import {
   SafeAreaView,
   StyleSheet,
@@ -47,8 +45,44 @@ import {
 
 
 
-const LabSessionState = ['off', 'demo', 'tetrisA', 'tetrisB', 'flowA', 'flowB', 'flowExtra', 'complete'];
+const LabSessionState = ['off', 'demo', 'tetrisA', 'tetrisB', 'flowA', 'flowB', 'complete'];
 
+const MIN_TRANSITION_MIN=4;
+
+function Timer(callback, delay, minimum=0){
+    var timerId, start, remaining = delay;
+
+    this.pause = function() {
+        clearTimeout(timerId);
+        timerId = null;
+        remaining -= Date.now() - start;
+	console.log('[TIMER] Paused with ' + (remaining/(60*1000)) + ' min left.');    
+    };
+
+    this.resume = function() {
+        if (timerId) {
+            return;
+        }
+
+        start = Date.now();
+        timerId = setTimeout(callback, Math.max(remaining, minimum));
+
+	if (remaining < minimum){    
+		console.log('[TIMER] Started with ' + MIN_TRANSITION_MIN + ', too short left: ' + (remaining/(60*1000)) + ' min. ' + Math.max(remaining, minimum)/(60*1000));    
+	} else {
+		console.log('[TIMER] Started with remaining (more than ' + MIN_TRANSITION_MIN + ' min left): ' + (remaining/(60*1000)) + ' min. ' + Math.max(remaining, minimum)/(60*1000));    
+	}
+    };
+
+    this.clear = function(){
+	clearTimeout(timerId);
+	timerId = null;    
+	console.log('[TIMER] Cleared with ' + (remaining/(60*1000)) + ' min left.');    
+    }
+
+    this.resume();
+
+}
 
 export default class LabSession extends React.Component {
   constructor(props) {
@@ -63,6 +97,7 @@ export default class LabSession extends React.Component {
     this.lightState = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     this.rg_toggle = true;
     this.transitioning= false;
+    this.transitioned= false;
     this.disconnected = false;	  
     this.appStateSub = AppState.addEventListener( 'change', nextAppState => {
 	    console.log('app state sub called: ' + nextAppState);	  
@@ -135,7 +170,7 @@ export default class LabSession extends React.Component {
   async componentWillUnmount(){
     console.log('unmount labsession');	  
     if (this.state.testRunning){
-      clearTimeout(this.timer);
+      this.timer.clear();	    
       await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
       try {	  
 	      this.setLightOff();
@@ -180,6 +215,7 @@ export default class LabSession extends React.Component {
         console.log('ALREADY BLUE');
         this.props.dataLog('u', ['VIDGAME', 'FINISHED_TRANSITION']);
         this.transitioning = false;
+        this.transitioned = true;
     }
   }
 
@@ -192,16 +228,17 @@ export default class LabSession extends React.Component {
       }
       if (this.transitioning){
         this.moveToBlue();
-        this.timer = setTimeout(this.changeColor.bind(this), this.state.stepInterval);
+        this.timer = new Timer(this.changeColor.bind(this), this.state.stepInterval);
       }
   }
 
   async feltStimuli(){
       await this.props.dataLog('u', ['VIDGAME', 'NOTICED', 'RGB', this.lightState[8], this.lightState[5], this.lightState[4]]);
       console.log('felt it');
-      clearTimeout(this.timer);
+      this.timer.clear();
       this.resetLight();
       this.transitioning = false;
+      this.transitioned = false;
       this.setState({popover: true});
   }
 
@@ -252,66 +289,95 @@ export default class LabSession extends React.Component {
 
   async resumeTest(gamenum){
       console.log('RESUME TEST');
-      this.resetLight();
 
-      switch(LabSessionState[this.state.currentState]){
-		case 'off':
+      if (this.props.glassesStatus == 'Connected.'){
+
+      //only resume when popover is false, otherwise leave paused	  
+      if (this.state.popover == false){
+
+
+	      switch(LabSessionState[this.state.currentState]){
+			case 'off':
+			case 'demo':
+				await this.props.startLogging('LAB_DEMO_RESUME');	  
+				break;
+			case 'tetrisA':
+			case 'tetrisB':
+				await this.props.startLogging('LAB_TETRIS_RESUME');	  
+				break;
+			case 'flowA':
+			case 'flowB':
+				await this.props.startLogging('LAB_FLOWACTIVITY_RESUME');	  
+				break;
+		}
+
+	      await this.props.dataLog('u', ['VIDGAME',
+		  'START_TEST',
+		  JSON.stringify({stepInterval: this.state.stepInterval}),
+		  JSON.stringify({startBlue: this.state.startBlue}),
+		  JSON.stringify({intensity: this.state.intensity}),
+		  JSON.stringify({bIntensity: this.state.bIntensity})
+	      ]);
+
+	      this.setState({testRunning: true});
+
+	      switch(LabSessionState[this.state.currentState]){ 
+		case 'off':	      
 		case 'demo':
-		      	await this.props.startLogging('LAB_DEMO_RESUME');	  
-			break;
+		      console.log('starting transition in 1 min');
+		      this.timer.clear();
+		      this.timer = new Timer(this.changeColor.bind(this), 60*1000, 60*1000);
+		      this.transitioning = false;
+		      this.transitioned = false;
+		      break;	      
 		case 'tetrisA':
 		case 'tetrisB':
-		      	await this.props.startLogging('LAB_TETRIS_RESUME');	  
-			break;
 		case 'flowA':
 		case 'flowB':
-		case 'flowExtra':
-		      	await this.props.startLogging('LAB_FLOWACTIVITY_RESUME');	  
-			break;
-	}
+		      if (this.transitioning || this.transitioned) {	      
+			      console.log('resuming test, after failure during or after transition; new timer');
+			      this.timer.clear();
+			      this.timer = new Timer(this.changeColor.bind(this), MIN_TRANSITION_MIN*60*1000, MIN_TRANSITION_MIN*60*1000);
+			      this.transitioning = false;
+			      this.transitioned = false;
+		      } else {
+			      console.log('resuming test, arming remaining transition');
+			      this.timer.resume();
+		      }
+		      break;		      
+	      }
 
-      await this.props.dataLog('u', ['VIDGAME',
-          'START_TEST',
-          JSON.stringify({stepInterval: this.state.stepInterval}),
-          JSON.stringify({startBlue: this.state.startBlue}),
-          JSON.stringify({intensity: this.state.intensity}),
-          JSON.stringify({bIntensity: this.state.bIntensity})
-      ]);
+	      this.resetLight();
 
-      this.setState({testRunning: true});
-
-      switch(LabSessionState[this.state.currentState]){ 
-	case 'off':	      
-	case 'demo':
-	      console.log('starting transition in 1 min');
-	      this.timer = setTimeout(this.changeColor.bind(this), 60000);
-	      break;	      
-	case 'tetrisA':
-	case 'tetrisB':
-	case 'flowA':
-	case 'flowB':
-	      console.log('armed normal transition');
-	      this.timer = setTimeout(this.changeColor.bind(this), this.getMainInterval());
-	case 'flowExtra':	      
-	      console.log('no transition required');
-	      await this.setLightOff();
-	      break;		      
+      } else {
+	console.log('CANNOT RESUME TEST, POPOVER TRUE');
       }
+      } else { //no glasses connection, don't start test
+             console.log('glasses not connected, can\'t resume test');
+             this.props.setScanning(true);
+             this.disconnected = true;
+      }	      
   }
 
   async pauseTest(){
-      clearTimeout(this.timer);
-      this.setState({popover: true, uploading:true, testRunning: false});
-      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
-      try {	  
-	      this.setLightOff();
-      }catch(e){
-	console.log('pause came from disconnect; cannot set LEDs');
+      
+      if (this.state.popover){
+	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
+      }else{
+	      this.timer.pause();
+	      this.setState({popover: true, uploading:true, testRunning: false});
+	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
+	      try {	  
+		      this.setLightOff();
+	      }catch(e){
+		console.log('pause came from disconnect; cannot set LEDs');
+	      }
+	      console.log('TEST ABORTED');
+	      await this.props.stopLogging();	  
+	      this.setState({popover: false, uploading:false});
       }
-      console.log('TEST ABORTED');
-      await this.props.stopLogging();	  
-      this.setState({popover: false, uploading:false});
   }
+
 
   toggleTest(){
     if (this.state.testRunning){
@@ -323,6 +389,22 @@ export default class LabSession extends React.Component {
 
   async startTest(){
       console.log('START TEST');
+
+      switch(LabSessionState[this.state.currentState]){ 
+	case 'off':	      
+	case 'demo':
+	      console.log('starting transition in 1 min');
+	      this.timer = new Timer(this.changeColor.bind(this), 60*1000, 60*1000);
+	      break;	      
+	case 'tetrisA':
+	case 'tetrisB':
+	case 'flowA':
+	case 'flowB':
+	      console.log('armed normal transition');
+	      this.timer = new Timer(this.changeColor.bind(this), this.getMainInterval(), MIN_TRANSITION_MIN*60*1000);
+	      break;	      
+      }
+
       if (this.props.glassesStatus == 'Connected.'){	  
 	      console.log('glasses connected, can start test');
 	      this.resetLight();
@@ -336,28 +418,10 @@ export default class LabSession extends React.Component {
 
 	      this.setState({testRunning: true});
 
-	      switch(LabSessionState[this.state.currentState]){ 
-	        case 'off':	      
-		case 'demo':
-		      console.log('starting transition in 1 min');
-		      this.timer = setTimeout(this.changeColor.bind(this), 60000);
-		      break;	      
-		case 'tetrisA':
-		case 'tetrisB':
-		case 'flowA':
-		case 'flowB':
-		      console.log('armed normal transition');
-		      this.timer = setTimeout(this.changeColor.bind(this), this.getMainInterval());
-		      break;	      
-	        case 'flowExtra':	      
-		      console.log('no transition required');
-		      await this.setLightOff();
-		      break;		      
-	      }
-
       } else { //no glasses connection, don't start test
 	      console.log('glasses not connected, can\'t start test');
 	      this.props.setScanning(true);
+	      this.disconnected = true;
 	      await this.pauseTest();
       }
   }
@@ -426,21 +490,11 @@ export default class LabSession extends React.Component {
 			await this.startTest();
 			break;
 		case 'flowB':
-			//write survey data, close file and continue file, write 'continuation' log, restart session
-		        this.setState({uploading: true, testRunning: false});
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabMidActivity2Survey']);
-			await this.writeSurveyResults(surveyResults);
-		        await this.props.sendToStorage();
-			await this.props.log('SESSION','CONTINUATION')	  
-			this.setState((prevState) => ({popover:false, uploading:false, currentState:prevState.currentState+1}));
-			await this.startTest();
-			break;
-		case 'flowExtra':
 			//write survey data, close file and end
 		        this.setState({uploading: true, testRunning: false});
 			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabFinalSurvey']);
 			await this.writeSurveyResults(surveyResults);
-		        await this.props.stopLogging();	  
+		        await this.props.stopLogging(true);	  
 			this.setState((prevState) => ({uploading:false, currentState:prevState.currentState+1}));
 			break;
 	}
@@ -469,13 +523,11 @@ export default class LabSession extends React.Component {
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
 		{this.state.currentState==4 && <LabMidActivitySurvey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==5 && <LabMidActivity2Survey
+		{this.state.currentState==5 && <LabFinalSurvey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==6 && <LabFinalSurvey
-		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-	       {this.state.currentState==7 ? <>
+	       {this.state.currentState==6 ? <>
 			<Text style={{width:'100%', padding:10, paddingTop:5, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
-			   Completed! Thank you!  {"\n\n"} Please exit this screen or the app! {"\n\n"} Don't forget to charge your wearables! {"\n\n"}
+			   Completed! Thank you!  {"\n\n"} Please exit this screen or the app! {"\n\n"} Don't forget to charge the watch and the glasses overnight! {"\n\n"}
 			</Text>
 			<Button title="OK" onPress={() => {this.setState({popover:false, currentState: 0})}}/>
 	       </>:<></>}
@@ -498,18 +550,8 @@ export default class LabSession extends React.Component {
         </View>
 
 
-        <View style={{width:'100%', height:150, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+        <View style={{width:'100%', height:200, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
-        <TouchableOpacity
-          style={styles.bigbuttonStyleLarge}
-          activeOpacity={0.5}
-          onPress={() => this.toggleTest()}>
-            {this.state.testRunning ?
-                <Image source={require('../icons/file_progress.png')}
-                    style={{width:'100%', height: undefined, aspectRatio:1}}/>:
-                <Image source={require('../icons/file_stopped.png')}
-                    style={{width:'100%', height: undefined, aspectRatio:1}}/>}
-        </TouchableOpacity>
 
         <TouchableOpacity
           style={{...styles.bigbuttonStyleLarge, opacity:this.state.testRunning?1:0.3}}
@@ -522,25 +564,39 @@ export default class LabSession extends React.Component {
         </View>
 
         <View style={{width:'100%', flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-	  {this.state.currentState==6 ? 
-            <Text style={{margin:15, fontSize:15}}> Click the check when you're done.</Text>:
             <Text style={{margin:15, fontSize:15}}> Click the face when you notice the light is blue.</Text>
-	  }
         </View>
 
         <View style={{width:'100%', flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
+        <View style={{width:'100%', height:70, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+
+        <TouchableOpacity
+          style={[styles.bigbuttonStyleLarge, {padding:10, marginRight:5}]}
+          activeOpacity={0.5}
+          onPress={() => this.toggleTest()}>
+            {this.state.testRunning ?
+                <Image source={require('../icons/file_progress.png')}
+                    style={{width:'100%', height: undefined, aspectRatio:1}}/>:
+                <Image source={require('../icons/file_stopped.png')}
+                    style={{width:'100%', height: undefined, aspectRatio:1}}/>}
+        </TouchableOpacity>
+
+	</View>
         {this.state.testRunning ?
-            <Text style={{margin:15, fontSize:20, color:'green'}}> Test In Progress...</Text>:
-            <Text style={{margin:15, fontSize:20, color:'red'}}> Test Paused.</Text>
+            <Text style={{paddingRight:75, fontSize:20, color:'green'}}> Test In Progress...</Text>:
+            <Text style={{paddingRight:75, fontSize:20, color:'red'}}> Test Paused.</Text>
         }
         </View>
 
+
         <View style={styles.separator} />
 
-        <View style={{width:'100%', minHeight:150, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+        <View style={{width:'90%', minHeight:150, paddingTop:50, flexGrow:1, flex:1, flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
 
-            <TextInput style={{ backgroundColor: '#ededed', height: 34, width: '60%', margin:5, borderColor: '#7a42f4', borderWidth: 1}} autoCapitalize = 'none'
+		<Text style={{fontStyle:"italic", width:'100%', textAlign:'justify'}}>For connection issues, tap resync or restart the glasses.  For problems that persist call David at 703-347-1376.  Note issues below.	
+		</Text>
+            <TextInput style={{ backgroundColor: '#ededed', height: 34, width: '100%', margin:5, borderColor: '#7a42f4', borderWidth: 1}} autoCapitalize = 'none'
                 value ={this.state.notes}
                 multiline={true}
                 onChangeText = {text => this.setState({notes:text})}/>

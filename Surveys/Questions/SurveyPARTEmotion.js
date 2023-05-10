@@ -26,6 +26,7 @@ import TimeInput from '@tighten/react-native-time-input';
 import Slider from "@react-native-community/slider";
 
 import LikertQ from '../Questions/LikertQ';
+import LikertQ5 from '../Questions/LikertQ5';
 import TrueFalseQ from '../Questions/TrueFalseQ';
 import EmpaticaCue from '../Questions/EmpaticaCue';
 import LongQ from '../Questions/LongQ';
@@ -125,8 +126,21 @@ function SurveyPARTEmotion(props){
 	    <Text style={{paddingTop:10, paddingBottom:10, fontWeight:'bold'}}> How do you feel now? </Text>
 	    <LikertQ lowText="very low" highText="very high" text="Alertness" setter={setNowAlertness}/>
 	    <LikertQ lowText="very low" highText="very high"  text="Stress" setter={setNowStress}/>
-	    <LikertQ lowText="very negative" highText="very postive"  text="Emotional State" setter={setNowEmotion}/>
-	    <LikertQ lowText="very low" highText="very high"  text="Emotional Intensity" setter={setNowEmoIntensity}/>
+
+	    <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
+		    <Text>Emotional State</Text>
+            </View>
+            <Image source={require('./images/SAM_valence.jpg')}
+                style={{width:'100%', height: undefined, aspectRatio:818/137, marginBottom:-25}}/>
+	    <LikertQ5 lowText="" highText=""  text=" " setter={setNowEmotion}/>
+
+
+	    <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
+		    <Text>Emotional Intensity</Text>
+            </View>
+            <Image source={require('./images/SAM_arousal.jpg')}
+                style={{width:'100%', height: undefined, aspectRatio:818/137, marginBottom:-25}}/>
+	    <LikertQ5 lowText="" highText=""  text=" " setter={setNowEmoIntensity}/>
 	    {!props.shorten && <>
 		    <FreeQ text="Describe your emotional and focus state:" val={freeEmotion} setter={setFreeEmotion}/>
 		    <FreeQ text="Recent food, caffeine, exercise, sleep?" val={freeFood} setter={setFreeFood}/>

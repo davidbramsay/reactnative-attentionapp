@@ -57,11 +57,11 @@ function EmpaticaCue(props){
 	    <View style={{width:"100%", padding:5}}>
 	    {props.start ? <>
 		    <Text style={{fontWeight:"bold", paddingBottom:5}}>Start Empatica Recording</Text>
-		    <Text style={{textAlign:'justify'}}>Please put on the empatica device on your non-dominant hand.  Start the countdown below, and when the timer hits zero, press and hold the button on the Empatica.  After 2 seconds, an LED will illuminate and you can let go.
+		    <Text style={{textAlign:'justify'}}>Please put on the empatica device on your non-dominant hand.  (Remember, the charging bottom part comes off! Make sure you see sensors on the bottom before you put it on!)  Start the countdown below, and when the timer hits zero, PRESS AND HOLD the button on the Empatica.  After holding it for 2 SECONDS, the LED will start to BLINK-- showing it is recording-- and you can let go.
 	                                   </Text>
 		    </>:<>
 		    <Text style={{fontWeight:"bold", paddingBottom:5}}>Stop Empatica Recording</Text>
-		    <Text style={{textAlign:'justify'}}>Please start the countdown below, and when the timer hits zero, press and hold the button on the Empatica until the LED flashes.
+		    <Text style={{textAlign:'justify'}}>Please start the countdown below, and when the timer hits zero, PRESS AND HOLD the button on the Empatica for over 2 SECONDS to turn it off.  The lights on the bottom of the device should be powered off when you've done this successfully.
 	                                   </Text>
 		    </>
 	    }
@@ -82,7 +82,7 @@ function EmpaticaCue(props){
 		</TouchableOpacity>
 	    </View>
 	    </>:<>
-	    <View style={{width:"100%", minHeight:75, padding:5, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
+	    <View style={{width:"100%", minHeight:75, padding:5, paddingBottom: 25, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
 
 		<TouchableOpacity
 		  style={{width:'70%', height:65, padding:5, justifyContent:"center", alignItems:"center"}}

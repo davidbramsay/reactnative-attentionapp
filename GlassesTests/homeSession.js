@@ -24,10 +24,13 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Modal from "react-native-modal";
 import { AppState } from 'react-native';
 
-import StartVideogameSurvey from "../Surveys/StartVideogameSurvey";
-import EndGame1Survey from "../Surveys/EndGame1Survey";
-import EndGame2Survey from "../Surveys/EndGame2Survey";
-import MidGameSurvey from "../Surveys/MidGameSurvey";
+import HomeStartSurvey from "../Surveys/HomeStartSurvey";
+import HomeMidSurvey from "../Surveys/HomeMidSurvey";
+import HomeFinalSurvey from "../Surveys/HomeFinalSurvey";
+import HomeMidActivitySurvey from "../Surveys/HomeMidActivitySurvey";
+
+import Video from 'react-native-video';
+import viddone from '../phdstudy4_sess1finish_v2.mp4';
 
 import {
   SafeAreaView,
@@ -40,18 +43,55 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  FlatList	
 } from "react-native";
 
 
 
-const videogameSessionState = ['off', 'game1A', 'game1B', 'game2A', 'game2B', 'complete'];
+const HomeSessionState = ['off', 'tetrisA', 'tetrisB', 'flowA', 'flowB', 'complete'];
 
+const MIN_TRANSITION_MIN=4;
 
-export default class HomeSession2 extends React.Component {
+function Timer(callback, delay, minimum=0){
+    var timerId, start, remaining = delay;
+
+    this.pause = function() {
+        clearTimeout(timerId);
+        timerId = null;
+        remaining -= Date.now() - start;
+	console.log('[TIMER] Paused with ' + (remaining/(60*1000)) + ' min left.');    
+    };
+
+    this.resume = function() {
+        if (timerId) {
+            return;
+        }
+
+        start = Date.now();
+        timerId = setTimeout(callback, Math.max(remaining, minimum));
+
+	if (remaining < minimum){    
+		console.log('[TIMER] Started with ' + MIN_TRANSITION_MIN + ', too short left: ' + (remaining/(60*1000)) + ' min. ' + Math.max(remaining, minimum)/(60*1000));    
+	} else {
+		console.log('[TIMER] Started with remaining (more than ' + MIN_TRANSITION_MIN + ' min left): ' + (remaining/(60*1000)) + ' min. ' + Math.max(remaining, minimum)/(60*1000));    
+	}
+    };
+
+    this.clear = function(){
+	clearTimeout(timerId);
+	timerId = null;    
+	console.log('[TIMER] Cleared with ' + (remaining/(60*1000)) + ' min left.');    
+    }
+
+    this.resume();
+
+}
+
+export default class HomeSession extends React.Component {
   constructor(props) {
     super(props);
     this.state = {intensity: 170, startBlue: 70, bIntensity: 50, notes: '',
-                  mainInterval: 20, stepInterval: 300, testRunning: false, 
+                  mainInterval: 12.5, stepInterval: 300, testRunning: false, 
 	    	  currentState:0,
 	          popover: true, uploading: false};
     this.timer = null;
@@ -60,6 +100,7 @@ export default class HomeSession2 extends React.Component {
     this.lightState = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     this.rg_toggle = true;
     this.transitioning= false;
+    this.transitioned= false;
     this.disconnected = false;	  
     this.appStateSub = AppState.addEventListener( 'change', nextAppState => {
 	    console.log('app state sub called: ' + nextAppState);	  
@@ -83,6 +124,18 @@ export default class HomeSession2 extends React.Component {
   }
 
   componentDidUpdate = (nextProps) => {
+
+    /*	  
+    console.log('triggering rerender');	  
+
+    for (const [key, value] of Object.entries(nextProps)) {
+	  if (value != this.props[key]){  
+		  console.log('CHANGE DETECTED: ' + key);
+	 	  console.log(value);
+	  }
+    }
+    */
+
     //on change of glassesStatus or watchStatus...	  
     if (nextProps.glassesStatus !== this.props.glassesStatus || nextProps.watchStatus !== this.props.watchStatus) {
 	console.log('Got status update');
@@ -118,9 +171,9 @@ export default class HomeSession2 extends React.Component {
   }	
 
   async componentWillUnmount(){
-    console.log('unmount vidsession');	  
+    console.log('unmount homesession');	  
     if (this.state.testRunning){
-      clearTimeout(this.timer);
+      this.timer.clear();
       await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
       try {	  
 	      this.setLightOff();
@@ -165,6 +218,7 @@ export default class HomeSession2 extends React.Component {
         console.log('ALREADY BLUE');
         this.props.dataLog('u', ['VIDGAME', 'FINISHED_TRANSITION']);
         this.transitioning = false;
+        this.transitioned = true;
     }
   }
 
@@ -177,16 +231,17 @@ export default class HomeSession2 extends React.Component {
       }
       if (this.transitioning){
         this.moveToBlue();
-        this.timer = setTimeout(this.changeColor.bind(this), this.state.stepInterval);
+        this.timer = new Timer(this.changeColor.bind(this), this.state.stepInterval);
       }
   }
 
   async feltStimuli(){
       await this.props.dataLog('u', ['VIDGAME', 'NOTICED', 'RGB', this.lightState[8], this.lightState[5], this.lightState[4]]);
       console.log('felt it');
-      clearTimeout(this.timer);
+      this.timer.clear();
       this.resetLight();
       this.transitioning = false;
+      this.transitioned = false;
       this.setState({popover: true});
   }
 
@@ -237,44 +292,75 @@ export default class HomeSession2 extends React.Component {
 
   async resumeTest(gamenum){
       console.log('RESUME TEST');
-      this.resetLight();
 
-      switch(videogameSessionState[this.state.currentState]){
-		case 'off':
-		case 'game1A':
-		case 'game1B':
-		      	await this.props.startLogging('VIDGAME1_RESUME');	  
-			break;
-		case 'game2A':
-		case 'game2B':
-		      	await this.props.startLogging('VIDGAME2_RESUME');	  
-			break;
-	}
+      if (this.props.glassesStatus == 'Connected.'){	  
 
-      await this.props.dataLog('u', ['VIDGAME',
-          'START_TEST',
-          JSON.stringify({stepInterval: this.state.stepInterval}),
-          JSON.stringify({startBlue: this.state.startBlue}),
-          JSON.stringify({intensity: this.state.intensity}),
-          JSON.stringify({bIntensity: this.state.bIntensity})
-      ]);
+      //only resume when popover is false, otherwise leave paused	  
+      if (this.state.popover == false){
 
-      this.setState({testRunning: true});
-      this.timer = setTimeout(this.changeColor.bind(this), this.getMainInterval());
+
+	      switch(HomeSessionState[this.state.currentState]){
+			case 'off':
+			case 'tetrisA':
+			case 'tetrisB':
+				await this.props.startLogging('HOME_TETRIS_RESUME');	  
+				break;
+			case 'flowA':
+			case 'flowB':
+				await this.props.startLogging('HOME_FLOWACTIVITY_RESUME');	  
+				break;
+		}
+
+	      await this.props.dataLog('u', ['VIDGAME',
+		  'START_TEST',
+		  JSON.stringify({stepInterval: this.state.stepInterval}),
+		  JSON.stringify({startBlue: this.state.startBlue}),
+		  JSON.stringify({intensity: this.state.intensity}),
+		  JSON.stringify({bIntensity: this.state.bIntensity})
+	      ]);
+
+	      this.setState({testRunning: true});
+
+	      if (this.transitioning || this.transitioned) {	      
+		      console.log('resuming test, after failure during or after transition; new timer');
+		      this.timer.clear();
+		      this.timer = new Timer(this.changeColor.bind(this), MIN_TRANSITION_MIN*60*1000, MIN_TRANSITION_MIN*60*1000);
+		      this.transitioning = false;
+		      this.transitioned = false;
+	      } else {
+		      console.log('resuming test, arming remaining transition');
+		      this.timer.resume();
+	      }
+
+	      this.resetLight();
+
+      } else {
+	console.log('CANNOT RESUME TEST, POPOVER TRUE');
+      }
+      } else { //no glasses connection, don't start test
+	      console.log('glasses not connected, can\'t resume test');
+	      this.props.setScanning(true);
+	      this.disconnected = true;
+      }
+
   }
 
   async pauseTest(){
-      clearTimeout(this.timer);
-      this.setState({popover: true, uploading:true, testRunning: false});
-      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
-      try {	  
-	      this.setLightOff();
-      }catch(e){
-	console.log('pause came from disconnect; cannot set LEDs');
+      if (this.state.popover){
+	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
+      }else{
+	      this.timer.pause();
+	      this.setState({popover: true, uploading:true, testRunning: false});
+	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
+	      try {	  
+		      this.setLightOff();
+	      }catch(e){
+		console.log('pause came from disconnect; cannot set LEDs');
+	      }
+	      console.log('TEST ABORTED');
+	      await this.props.stopLogging();	  
+	      this.setState({popover: false, uploading:false});
       }
-      console.log('TEST ABORTED');
-      await this.props.stopLogging();	  
-      this.setState({popover: false, uploading:false});
   }
 
   toggleTest(){
@@ -287,6 +373,10 @@ export default class HomeSession2 extends React.Component {
 
   async startTest(){
       console.log('START TEST');
+
+      console.log('armed normal transition');
+      this.timer = new Timer(this.changeColor.bind(this), this.getMainInterval(), MIN_TRANSITION_MIN*60*1000);
+
       if (this.props.glassesStatus == 'Connected.'){	  
 	      console.log('glasses connected, can start test');
 	      this.resetLight();
@@ -299,10 +389,11 @@ export default class HomeSession2 extends React.Component {
 	      ]);
 
 	      this.setState({testRunning: true});
-	      this.timer = setTimeout(this.changeColor.bind(this), this.getMainInterval());
+
       } else { //no glasses connection, don't start test
 	      console.log('glasses not connected, can\'t start test');
 	      this.props.setScanning(true);
+	      this.disconnected = true;
 	      await this.pauseTest();
       }
   }
@@ -318,63 +409,64 @@ export default class HomeSession2 extends React.Component {
 	
 	var time = Date.now();  
 
-	console.log('Game State = ' + videogameSessionState[this.state.currentState]);  
+	console.log('Game State = ' + HomeSessionState[this.state.currentState]);  
 	console.log(surveyResults);
 	  
-	switch(videogameSessionState[this.state.currentState]){
+	switch(HomeSessionState[this.state.currentState]){
 		case 'off':
 			//open initial file, write survey data, start session (start timer, turn on light)
 		        this.setState({uploading: true, testRunning: false});
-		      	await this.props.startLogging('VIDGAME1');	  
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'StartVideoGameSurvey']);
+		      	await this.props.startLogging('HOME_TETRIS');	  
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'HomeStartSurvey']);
 			await this.writeSurveyResults(surveyResults);
 			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
 			await this.startTest();
 			break;
-		case 'game1A':
+		case 'tetrisA':
 			//write survey data, close file and continue file, write 'continuation' log, restart session
 		        this.setState({uploading: true, testRunning: false});
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'MidGame1Survey']);
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'HomeMidActivitySurvey']);
 			await this.writeSurveyResults(surveyResults);
 		        await this.props.sendToStorage();
 			await this.props.log('SESSION','CONTINUATION')	  
 			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
 			await this.startTest();
 			break;
-		case 'game1B':
+		case 'tetrisB':
 			//write survey data, close file and new filename,  restart session
 		        this.setState({uploading: true, testRunning: false});
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'EndGame1Survey']);
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'HomeMidSurvey']);
 			await this.writeSurveyResults(surveyResults);
 		        await this.props.stopLogging();	  
-		      	await this.props.startLogging('VIDGAME2');	  
+		      	await this.props.startLogging('HOME_FLOW');	  
 			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
 			await this.startTest();
 			break;
-		case 'game2A':
+		case 'flowA':
 			//write survey data, close file and continue file, write 'continuation' log, restart session
 		        this.setState({uploading: true, testRunning: false});
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'MidGame2Survey']);
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'HomeMidActivitySurvey']);
 			await this.writeSurveyResults(surveyResults);
 		        await this.props.sendToStorage();
 			await this.props.log('SESSION','CONTINUATION')	  
 			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
 			await this.startTest();
 			break;
-		case 'game2B':
+		case 'flowB':
 			//write survey data, close file and end
 		        this.setState({uploading: true, testRunning: false});
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'EndGame2Survey']);
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'HomeFinalSurvey']);
 			await this.writeSurveyResults(surveyResults);
-		        await this.props.stopLogging();	  
+		        await this.props.stopLogging(true);	  
 			this.setState((prevState) => ({uploading:false, currentState:prevState.currentState+1}));
 			break;
 	}
   }
 
   render() {
+    console.log('rerender');	  
     return (
-      <ScrollView>
+      <View style={{flex:1}}>
 	 <NavCallbackComponent {...this.props}/>   
 
 	 <Modal isVisible={this.state.popover} propogateSwipe backdropOpacity={1.0} backdropColor="white">
@@ -384,20 +476,23 @@ export default class HomeSession2 extends React.Component {
                     UPLOADING... please wait. 
                 </Text>
 	    </>:<>
-		{this.state.currentState==0 && <StartVideogameSurvey    
+		{this.state.currentState==0 && <HomeStartSurvey    
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==1 && <MidGameSurvey    
+		{this.state.currentState==1 && <HomeMidActivitySurvey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==2 && <EndGame1Survey    
+		{this.state.currentState==2 && <HomeMidSurvey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==3 && <MidGameSurvey    
+		{this.state.currentState==3 && <HomeMidActivitySurvey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==4 && <EndGame2Survey    
+		{this.state.currentState==4 && <HomeFinalSurvey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-
 	       {this.state.currentState==5 ? <>
 			<Text style={{width:'100%', padding:10, paddingTop:5, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
-			   Completed! Thank you!  {"\n\n"} Please exit this screen or the app! {"\n\n"} Don't forget to charge your wearables! {"\n\n"}
+			   Completed! Thank you!  {"\n\n"} 
+			</Text>
+		     <Video source={viddone} paused={true} controls={true} style={{width:"100%", height:220, marginTop:0, marginBottom:0}}/>
+			<Text style={{width:'100%', padding:10, paddingTop:5, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
+		       Please exit this screen or the app! {"\n\n"} Don't forget to charge the watch and the glasses overnight! {"\n\n"}
 			</Text>
 			<Button title="OK" onPress={() => {this.setState({popover:false, currentState: 0})}}/>
 	       </>:<></>}
@@ -405,7 +500,7 @@ export default class HomeSession2 extends React.Component {
         </Modal>
 
 
-
+	<ScrollView>
         <View style={styles.viewContainer}>
           <View style={{height:115, width:'100%'}}>
 
@@ -420,25 +515,14 @@ export default class HomeSession2 extends React.Component {
         </View>
 
 
-        <View style={{width:'100%', height:150, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-
-        <TouchableOpacity
-          style={styles.bigbuttonStyleLarge}
-          activeOpacity={0.5}
-          onPress={() => this.toggleTest()}>
-            {this.state.testRunning ?
-                <Image source={require('../icons/file_progress.png')}
-                    style={{width:'100%', height: undefined, aspectRatio:1}}/>:
-                <Image source={require('../icons/file_stopped.png')}
-                    style={{width:'100%', height: undefined, aspectRatio:1}}/>}
-        </TouchableOpacity>
+        <View style={{width:'100%', height:200, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
         <TouchableOpacity
           style={{...styles.bigbuttonStyleLarge, opacity:this.state.testRunning?1:0.3}}
 	  disabled={!this.state.testRunning}  
           activeOpacity={0.5}
           onPress={() => this.feltStimuli()}>
-            <Image source={require('../icons/shocked.png')}
+	      <Image source={this.state.currentState==6 ? require('../icons/checked.png') : require('../icons/shocked.png')}
                 style={{width:'100%', height: undefined, aspectRatio:1}}/>
         </TouchableOpacity>
         </View>
@@ -449,17 +533,33 @@ export default class HomeSession2 extends React.Component {
 
         <View style={{width:'100%', flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
+        <View style={{width:'100%', height:70, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+
+        <TouchableOpacity
+          style={[styles.bigbuttonStyleLarge, {padding:10, marginRight:5}]}
+          activeOpacity={0.5}
+          onPress={() => this.toggleTest()}>
+            {this.state.testRunning ?
+                <Image source={require('../icons/file_progress.png')}
+                    style={{width:'100%', height: undefined, aspectRatio:1}}/>:
+                <Image source={require('../icons/file_stopped.png')}
+                    style={{width:'100%', height: undefined, aspectRatio:1}}/>}
+        </TouchableOpacity>
+
+	</View>
         {this.state.testRunning ?
-            <Text style={{margin:15, fontSize:20, color:'green'}}> Test In Progress...</Text>:
-            <Text style={{margin:15, fontSize:20, color:'red'}}> Test Paused.</Text>
+            <Text style={{paddingRight:75, fontSize:20, color:'green'}}> Test In Progress...</Text>:
+            <Text style={{paddingRight:75, fontSize:20, color:'red'}}> Test Paused.</Text>
         }
         </View>
 
         <View style={styles.separator} />
 
-        <View style={{width:'100%', minHeight:150, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+        <View style={{width:'90%', minHeight:150, paddingTop:50, flexGrow:1, flex:1, flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
 
-            <TextInput style={{ backgroundColor: '#ededed', height: 34, width: '60%', margin:5, borderColor: '#7a42f4', borderWidth: 1}} autoCapitalize = 'none'
+		<Text style={{fontStyle:"italic", width:'100%', textAlign:'justify'}}>For connection issues, tap resync or restart the glasses.  For problems that persist call David at 703-347-1376.  Note issues below.	
+		</Text>
+            <TextInput style={{ backgroundColor: '#ededed', height: 34, width: '100%', margin:5, borderColor: '#7a42f4', borderWidth: 1}} autoCapitalize = 'none'
                 value ={this.state.notes}
                 multiline={true}
                 onChangeText = {text => this.setState({notes:text})}/>
@@ -469,6 +569,7 @@ export default class HomeSession2 extends React.Component {
 
         </View>
       </ScrollView>
+</View>
     )
   }
 };

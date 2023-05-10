@@ -48,7 +48,14 @@ function LabMid1Survey(props){
 
 	    <SurveyPARTEmotion shorten={false} setter={setEmotionResults}/>
 
-	    <Text style={{textAlign:'center', padding:10}}> You will now play tetris for a short session.  When you notice the light has changed, your session will end.</Text>
+	    <View style={{width:"100%", paddingTop:40, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+		<Image source={require('../icons/traffic-sign.png')}
+		    style={{width:'30%', padding:5, height: undefined, aspectRatio:1}}/>
+		<Text style={{width:'65%', padding:15, textAlign:'justify'}}> Contact the test administrator who will talk to you about the upcoming task.</Text>
+	    </View>
+	     <View style={{padding:10}}/>
+
+	    <Text style={{textAlign:'center', padding:10}}> You will now play tetris for a short session.  Once you have noticed the light has changed twice, you can end the activity at any time.  Then you'll be asked to fill out a survey.</Text>
 
 	    <Text style={{textAlign:'center'}}> The time is now:</Text>
 

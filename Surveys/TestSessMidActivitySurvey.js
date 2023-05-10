@@ -26,7 +26,7 @@ const optMap = {
     5: 'precise (probably within 1 min)'
 };
 
-function LabMidActivity2Survey(props){
+function TestSessMidActivitySurvey(props){
 
     const [dur, setDur] = useState(null);	
     const [actualTimeAtDuration, setActualTimeAtDuration] = useState('');	
@@ -45,7 +45,7 @@ function LabMidActivity2Survey(props){
     return (
 	<>
 	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    <Text style={{fontWeight:'bold', padding:15}}> Pre-Extra-Time Survey </Text>
+		    <Text style={{fontWeight:'bold', padding:15}}> Mid-Activity Survey </Text>
 	    </View>
 	    
 	    <ScrollView keyboardShouldPersistTaps='handled'>
@@ -77,7 +77,7 @@ function LabMidActivity2Survey(props){
 
     	    <Text style={{paddingTop:20}}>Duration entered is: {dur} min</Text>
 
-	    <Text style={{paddingTop:40}}> Now you'll be returned to the app.  You don't have to continue your flow activity-- but you can-- before completing the exit survey.  To exit and initiate the exit survey, hit the button.
+	    <Text style={{paddingTop:40}}>Hit submit and continue your activity. 
 	    </Text>
 
 	    <View style={{...styles.separator, padding:20}} />
@@ -121,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(LabMidActivity2Survey);
+export default React.memo(TestSessMidActivitySurvey);

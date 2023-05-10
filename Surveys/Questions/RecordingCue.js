@@ -33,7 +33,7 @@ function RecordingCue(props){
 	<>
 	    <View style={{width:"100%", padding:5}}>
 	      <Text style={{fontWeight:"bold", paddingBottom:5}}>Start Screen Recording</Text>
-	      <Text style={{textAlign:'justify'}}>Turn on the iPad.  Swipe down from the top-right corner to reveal the control center screen.  You should see the screen below.{'\n\n'}Click the recording button to start recording.   
+	      <Text style={{textAlign:'justify'}}>On the iPad, swipe down from the top-right corner to reveal the control center screen.  You should see the screen below.{'\n\n'}Click the recording button to start recording.   
 	    </Text>
             </View>
 

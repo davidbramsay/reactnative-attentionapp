@@ -21,32 +21,28 @@ import {
   Image,
 } from "react-native";
 
-function YesNoQ(props){
-    
-    const [radioState, setRadioState] = useState(null);	
+import CheckBox from '@react-native-community/checkbox';
+const B = (props) => <Text style={{fontWeight: 'bold'}}>{props.children}</Text>
 
-     	
-    useEffect(() => {
-	    props.setter(radioState);
-    }, [radioState]);
+function ChecklistItem(props){
+    
+    const [isSelected, setSelection] = useState(false);	
 
     return (
 	<>
-	    {props.text && <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
-		    <Text>{props.text}</Text>
-            </View>}
 
-	    <View style={{width:"100%", padding:5, paddingBottom:10, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
+	    <View style={{width:"95%", paddingLeft:25, paddingBottom:15, paddingRight:0, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
 
-	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(true)}}>
-		{radioState==true ? (<View style={styles.checkedCircle} />) : (<View />)}
-	    </TouchableOpacity>
-	    <Text>Yes      </Text>
-
-	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(false)}}>
-		{radioState==false ? (<View style={styles.checkedCircle} />) : (<View />)}
-	    </TouchableOpacity>
-	    <Text>No</Text>
+	    <CheckBox
+	  boxType='square'  
+          value={isSelected}
+          onValueChange={setSelection}
+          style={styles.checkbox}
+        />
+	    <View style={{width:"95%", paddingLeft:20}}>
+	    	    <Text><B>{props.boldtext} </B>{props.text}</Text>
+	    		
+            </View>
 
 	    </View>
 
@@ -93,4 +89,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default React.memo(YesNoQ);
+export default React.memo(ChecklistItem);

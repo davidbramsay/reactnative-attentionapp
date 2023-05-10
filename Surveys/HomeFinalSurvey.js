@@ -1,4 +1,4 @@
-//Surveys/LabMid1Survey
+//Surveys/HomeFinalSurvey
 //
 // Survey after training period.
 //
@@ -27,7 +27,7 @@ import SurveyPARTThriving from '../Surveys/Questions/SurveyPARTThriving';
 import ChecklistItem from '../Surveys/Questions/ChecklistItem';
 import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
 
-function LabFinalSurvey(props){
+function HomeFinalSurvey(props){
 
     const [scrollEnabled, setScrollEnabled] = useState(true);	
     const [emotionResults, setEmotionResults] = useState([]);	
@@ -107,7 +107,7 @@ function LabFinalSurvey(props){
 	    {donePlaying ?
 	    <>
 	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    <Text style={{fontWeight:'bold', padding:15}}> Lab End Survey</Text>
+		    <Text style={{fontWeight:'bold', padding:15}}> Home End Survey</Text>
 	    </View>
  
 	    <FlatList keyboardShouldPersistTaps='handled' scrollEnabled={scrollEnabled}
@@ -119,7 +119,7 @@ function LabFinalSurvey(props){
 		   {type:"text", text:"Now that you're done with the activity, we'll walk you through taking off the wearables."},
 		   {type:"empaticacue"},
 		   {type:"checklist", boldtext:"1. Turn off the glasses.", text:"You many now remove both the glasses and the watch."}, 	
-		   {type:"checklist", boldtext:"2. Turn off the headphones and put the iPad to sleep.", text:""}, 	
+		   {type:"checklist", boldtext:"2. Turn off the headphones and the iPad screen.", text:""}, 	
 		   {type:"checklist", boldtext:"3. Plug the glasses, watch, and this device into the charger.", text:""}, 	
 		   {type:"text", text:"Please submit this form below!"},
 		   {type:"submit"}
@@ -177,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(LabFinalSurvey);
+export default React.memo(HomeFinalSurvey);

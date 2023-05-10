@@ -237,6 +237,10 @@ export default class VideogameSession extends React.Component {
 
   async resumeTest(gamenum){
       console.log('RESUME TEST');
+
+      //only resume when popover is false, otherwise leave paused	  
+      if (this.state.popover == false){
+
       this.resetLight();
 
       switch(videogameSessionState[this.state.currentState]){
@@ -261,20 +265,28 @@ export default class VideogameSession extends React.Component {
 
       this.setState({testRunning: true});
       this.timer = setTimeout(this.changeColor.bind(this), this.getMainInterval());
+      } else {
+	console.log('CANNOT RESUME TEST, POPOVER TRUE');
+      }
   }
 
   async pauseTest(){
-      clearTimeout(this.timer);
-      this.setState({popover: true, uploading:true, testRunning: false});
-      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
-      try {	  
-	      this.setLightOff();
-      }catch(e){
-	console.log('pause came from disconnect; cannot set LEDs');
+
+      if (this.state.popover){
+	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
+      }else{
+	      clearTimeout(this.timer);
+	      this.setState({popover: true, uploading:true, testRunning: false});
+	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
+	      try {	  
+		      this.setLightOff();
+	      }catch(e){
+		console.log('pause came from disconnect; cannot set LEDs');
+	      }
+	      console.log('TEST ABORTED');
+	      await this.props.stopLogging();	  
+	      this.setState({popover: false, uploading:false});
       }
-      console.log('TEST ABORTED');
-      await this.props.stopLogging();	  
-      this.setState({popover: false, uploading:false});
   }
 
   toggleTest(){

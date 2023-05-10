@@ -1,4 +1,4 @@
-//Surveys/LabMid1Survey
+//Surveys/HomeMidSurvey
 //
 // Survey after training period.
 //
@@ -23,7 +23,7 @@ import {
 import SurveyPARTEmotion from '../Surveys/Questions/SurveyPARTEmotion';
 import SurveyPARTFlow from '../Surveys/Questions/SurveyPARTFlow';
 
-function LabMid2Survey(props){
+function HomeMidSurvey(props){
 
     const [scrollEnabled, setScrollEnabled] = useState(true);	
     const [emotionResults, setEmotionResults] = useState([]);	
@@ -41,7 +41,7 @@ function LabMid2Survey(props){
 	    {donePlaying ?
 	    <>
 	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    <Text style={{fontWeight:'bold', padding:15}}> Lab Pre-Flow Activity Survey</Text>
+		    <Text style={{fontWeight:'bold', padding:15}}> Home Pre-Flow Activity Survey</Text>
 	    </View>
 
 	    <ScrollView keyboardShouldPersistTaps='handled' scrollEnabled={scrollEnabled}>
@@ -50,14 +50,11 @@ function LabMid2Survey(props){
 	    <SurveyPARTFlow setScrollEnabled={setScrollEnabled} setter={setFlowResults}/>
 	    <SurveyPARTEmotion shorten={true} setter={setEmotionResults}/>
 
-		    <View style={{width:"100%", paddingTop:40, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-			<Image source={require('../icons/traffic-sign.png')}
-			    style={{width:'30%', padding:5, height: undefined, aspectRatio:1}}/>
-			<Text style={{width:'65%', padding:15, textAlign:'justify'}}>Contact the test administrator who will talk to you about the upcoming task. </Text>
-		    </View>
 		     <View style={{padding:10}}/>
 		    
-	    <Text style={{textAlign:'center', padding:10}}> You will now do your flow activity for a short session.  Once you have noticed the light has changed twice, you can end the activity at any time.  Then you'll be asked to fill out a survey.</Text>
+	    <Text style={{textAlign:'center', padding:10}}> You are now done with Tetris!  Please turn off the iPad screen and set it aside along with the controller.  You may remove the headphones if you prefer for your flow activity session.</Text>
+
+	    <Text style={{textAlign:'center', padding:10}}> You will now engage in your flow activity for a short session.  Once you have noticed the light has changed twice, you can end the activity at any time.  Then you'll be asked to fill out a survey. When you're ready, hit the button below!</Text>
 
 	    <View style={{...styles.separator, padding:20}} />
 
@@ -91,7 +88,7 @@ function LabMid2Survey(props){
 		 onPress={handleActivityDone}>
 		 <Text style={{width:'100%', padding:10, paddingTop:5, height: 30, borderColor: '#7a42f4', 
 			      borderWidth: 1, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
-                    I'm done with the activity!
+                    I'm done with Tetris!
                  </Text>
                  </TouchableOpacity>
 
@@ -125,4 +122,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(LabMid2Survey);
+export default React.memo(HomeMidSurvey);

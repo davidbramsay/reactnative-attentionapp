@@ -20,7 +20,7 @@ import {decode as atob, encode as btoa} from 'base-64'
 import "react-native-gesture-handler";
 import React, { useEffect, useState, useRef } from "react";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import { Dimensions } from "react-native";
+import { Dimensions, StatusBar } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import auth from '@react-native-firebase/auth';
@@ -36,8 +36,7 @@ import GlassesTest from "./GlassesTests/glassesTest";
 //import WorkingSession from "./GlassesTests/workingSession";
 //import VideogameSession from "./GlassesTests/videogameSession";
 import LabSession from "./GlassesTests/labSession";
-import HomeSession1 from "./GlassesTests/homeSession1";
-import HomeSession2 from "./GlassesTests/homeSession2";
+import HomeSession from "./GlassesTests/homeSession";
 import VideogamePrototype from "./GlassesTests/videogamePrototype";
 import PavlokCalibrate from "./PavlokTests/pavlokCalibrate";
 import PavlokTest from "./PavlokTests/pavlokTest";
@@ -165,6 +164,8 @@ function App() {
     const fileOpen = useRef(null);
     const fileStream = useRef(null);
 
+    const lastPacketGlasses = useRef(true);	
+
     //watch state
     const [watchPaused, setWatchPaused] = useState(false);
     const [watchTimeBounds, setWatchTimeBounds] = useState([10, 22]);
@@ -261,6 +262,16 @@ function App() {
     function updateWatchData(dataArray){
 
         console.log(dataArray);
+	if (!lastPacketGlasses.current && dataArray[1] == 'TX_TEMP_HUMD'){
+		console.log('previous packet not watch.');
+		console.log(dataArray[1]);
+		if (glassesReady()){
+			console.log('DISCONNECT DUE TO STALL OF GLASSES');
+			disconnectGlasses();    
+			setBleScanning(true);    
+		}
+	}
+	lastPacketGlasses.current=false;    
 
         if (dataArray[0].getYear() > 120 && fileOpen.current != null){ //only send data if we've synced the clock and writing
 	  dataLog('w', dataArray);
@@ -304,6 +315,9 @@ function App() {
     }
 
     function updateGlassesData(key, value) {
+
+	lastPacketGlasses.current = true;    
+
 	try{    
         var hexraw = base64ToHex(value);
   	var parsedPayload = struct.unpack(
@@ -456,6 +470,7 @@ function App() {
     function sendLEDUpdate(ledArray){
       localBleState.current.writeCharacteristics.glassesLED.writeWithoutResponse(hexToBase64(bytesToHex(ledArray.slice(0))), null).catch((error) => {
 	console.error('LED WRITE TO GLASSES NOT WORKING');
+	console.error(error);      
         setGlassesBleState('ERROR');
       });
     }
@@ -465,7 +480,7 @@ function App() {
 
     async function writeLineToDisk(arrayToCsvLine){
 	if (fileOpen.current == null){
-	  console.error('CANNOT WRITE TO UNOPENED FILESubscriptions!!!')	
+	  console.error('CANNOT WRITE TO UNOPENED FILE!!!')	
 	  try {	
             fileStream.current = await fileStream.current.close();
 	  } catch(e){
@@ -554,7 +569,7 @@ function App() {
     }
 
 
-    async function sendToStorage(keepLogging=true){
+    async function sendToStorage(keepLogging=true, waitForUpload=false){
 	let returnflag = true;    
 
 	//we write to the file if fileOpen.current != null, so shut this down first.    
@@ -571,14 +586,30 @@ function App() {
  	    returnflag = false;			  
 	}
 
+	if (waitForUpload){
+		console.log('UPLOAD SYNC');
+		try {    
+		  await storage().ref(filename).putFile(utils.FilePath.DOCUMENT_DIRECTORY + '/' + filename);
+		}catch(e){
+		  console.error('error uploading ' + filename);
+		  console.error(e);
+		  returnflag = false;			  
+		}	
+
+	}else{
 	//upload to storage    
-	try {    
-	  await storage().ref(filename).putFile(utils.FilePath.DOCUMENT_DIRECTORY + '/' + filename);
-	}catch(e){
-	  console.error('error uploading ' + filename);
-	  console.error(e);
- 	  returnflag = false;			  
-	}	
+	  console.log('UPLOAD START');	
+	  var task = storage().ref(filename).putFile(utils.FilePath.DOCUMENT_DIRECTORY + '/' + filename);
+	  task.on('state_changed', null,
+	      function(error) {
+		console.log('UPLOAD ERROR');
+		task.cancel();  
+	      }, function(){
+		  console.log('UPLOAD DONE');
+	      }
+	  ); 
+	}
+
 
 	//open new file if keepLogging
 	if (keepLogging){
@@ -598,9 +629,9 @@ function App() {
        return await asciiStreamOpen(callingFunc);
     }
 
-    async function stopLogging(){
+    async function stopLogging(waitForUpload=false){
 	//close open file and send to storage, openFile.current == null means we've stopped streaming    
-	return await sendToStorage(false);
+	return await sendToStorage(false, waitForUpload);
     }
 
 
@@ -823,7 +854,7 @@ function App() {
         //this will only run on component mount because of empty array
         //passed as second argument to useEffect
 
-        console.log('ON MOUNT CALLED!');
+        console.log('APP:ON MOUNT CALLED!');
 
         AsyncStorage.getItem('username').then((username) => {if (username!=null){setUsername(username)}});
         AsyncStorage.getItem('minstrength').then((minstrength) => {if (minstrength!=null){setPavlokMinStrength(parseInt(minstrength))}});
@@ -851,7 +882,7 @@ function App() {
 
         return function cleanup() {
             //called when component unmounts
-            console.log('ON MOUNT DESTROYED!');
+            console.log('APP: ON MOUNT DESTROYED!');
             //stopRSSIUpdates();
 
             //unregister auth listener
@@ -1053,20 +1084,20 @@ function App() {
                 return device.discoverAllServicesAndCharacteristics();
             })
             .then((device) => {
-                console.log("services for " + device.name);
+                //console.log("services for " + device.name);
                 device
                 .services()
                 .then((services) => {
-                    console.log(services);
-                    console.log("characteristics");
+                    //console.log(services);
+                    //console.log("characteristics");
                     for (var s in services) {
-                      console.log(services[s]);
+                      //console.log(services[s]);
                       if (services[s].uuid == CAPTIVATES_SERVICE_UUID && device.name == 'CAPTIVATE') {
                         console.log("pushing glasses service");
                         device.characteristicsForService(services[s].uuid)
                         .then((c) => {
                             for (var i in c) {
-                            console.log(c[i]);
+                            //console.log(c[i]);
                             if (c[i].uuid === CAPTIVATES_LED_UUID) {
                                 console.log("pushing glasses LED characteristic");
                                 localBleState.current.writeCharacteristics['glassesLED'] = c[i];
@@ -1096,7 +1127,7 @@ function App() {
                         device.characteristicsForService(services[s].uuid)
                         .then((c)=> {
                             for (var i in c){
-				    console.log(c[i]);
+				    //console.log(c[i]);
 				    if (c[i].isNotifiable){
 					console.log('pushing watch RX characteristic')
 					localBleState.current.readSubscriptions['watch'] = device.monitorCharacteristicForService(c[i].serviceUUID,
@@ -1186,6 +1217,7 @@ function App() {
     //--RENDER--//
     return (
 	<>
+	<StatusBar hidden />    
 	<NavigationContainer>
 	  <Stack.Navigator>
 	    <Stack.Screen
@@ -1254,31 +1286,8 @@ function App() {
 		/>}
 	    </Stack.Screen>*/}
 
-	    <Stack.Screen name="HomeSession1" options={{title: "Home Session #1"}}>
-		{(props) => <HomeSession1 {...props}
-		    glassesStatus={glassesBleState}
-		    pavlokStatus={pavlokBleState}
-		    watchStatus={watchBleState}
-		    firebaseSignedIn={userInitialized}
-		    username={username}
-		    setUsername={setAndSaveUsername}
-
-		    sendLEDUpdate={sendLEDUpdate}
-
-		    startLogging={startLogging}	
-		    stopLogging={stopLogging}	
-		    sendToStorage={sendToStorage}
-		    log={log}
-		    dataLog={dataLog}
-
-		    connect={connect}
-		    scanning={bleScanning}	
-		    setScanning={setBleScanning}	
-		/>}
-	    </Stack.Screen>
-
-	    <Stack.Screen name="HomeSession2" options={{title: "Home Session #2"}}>
-		{(props) => <HomeSession2 {...props}
+	    <Stack.Screen name="HomeSession" options={{title: "Home Session"}}>
+		{(props) => <HomeSession {...props}
 		    glassesStatus={glassesBleState}
 		    pavlokStatus={pavlokBleState}
 		    watchStatus={watchBleState}
@@ -1448,6 +1457,10 @@ function App() {
 		    sendToStorage={sendToStorage}
 		    log={log}
 		    dataLog={dataLog}
+
+		    connect={connect}
+		    scanning={bleScanning}	
+		    setScanning={setBleScanning}	
 		/>}
 	    </Stack.Screen>
 

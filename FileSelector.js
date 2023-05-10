@@ -113,7 +113,7 @@ export default class FileSelector extends React.Component {
         <View style={{width:'100%', marginTop:5, marginLeft:5, flexGrow:1, flex:1, flexDirection:'row', alignItems:'center'}}>
 
         <View>
-        {this.state.files.map((val) => {
+        {this.state.files.sort((a,b) => a < b ? 1:-1).map((val) => {
                 return (
             <TouchableOpacity
 	      key={val+'to'}		

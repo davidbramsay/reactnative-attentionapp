@@ -29,7 +29,6 @@ function TrueFalseQ(props){
 
      	
     useEffect(() => {
-	    console.log('radio update');
 	    props.setter(radioState);
     }, [radioState]);
 

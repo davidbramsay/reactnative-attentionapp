@@ -143,6 +143,7 @@ function SurveyPARTFlow(props){
     const [flow, setFlow] = useState(null);	
     const [durFlow, setDurFlow] = useState(-1);	
     const [durToFlow, setDurToFlow] = useState(null);	
+    const [percentFlow, setPercentFlow] = useState(0);	
     const [flowDesc, setFlowDesc] = useState('');	
 
     const [flowDescA, setFlowDescA] = useState(null);	
@@ -184,6 +185,7 @@ function SurveyPARTFlow(props){
 		'flow', flow,
 		'durFlow', durFlow,
 		'durToFlow', durToFlow,
+		'percentFlow', percentFlow,
 		'flowDesc', flowDesc,    
 		'flowDescA', flowDescA,   
                 'flowDescB', flowDescB,
@@ -205,7 +207,7 @@ function SurveyPARTFlow(props){
 		'flowQ3', flowQ3,
 		'flowQ4', flowQ4
 	    ]);
-    }, [dur, actualTimeAtDuration, lastClockConfidence, time, actualTimeAtGuess, confidence, flowPath, flowCanvasSize,  timeExp, focus, effort, deepest, flow, durFlow, durToFlow, flowDesc, flowDescA, flowDescB, flowDescC, flowDescD, flowDescE, flowDescF, FSS1, FSS2, FSS3, FSS4, FSS5, FSS6, FSS7, FSS8, FSS9, flowQ1, flowQ2, flowQ3, flowQ4]);	
+    }, [dur, actualTimeAtDuration, lastClockConfidence, time, actualTimeAtGuess, confidence, flowPath, flowCanvasSize,  timeExp, focus, effort, deepest, flow, durFlow, durToFlow, percentFlow, flowDesc, flowDescA, flowDescB, flowDescC, flowDescD, flowDescE, flowDescF, FSS1, FSS2, FSS3, FSS4, FSS5, FSS6, FSS7, FSS8, FSS9, flowQ1, flowQ2, flowQ3, flowQ4]);	
 
     return (
 	<>
@@ -319,7 +321,26 @@ function SurveyPARTFlow(props){
 
 	    {/*<LongQ map={flowDurMap} text="Duration of flow?" val={durFlow} setter={setDurFlow}/>*/}
 	    <FreeQ text="If you experienced it, how long do you believe it took you to get into flow?" val={durToFlow} setter={setDurToFlow}/>
-	    <FreeQ text="Do you remember having moments during this experience where you were deeply engaged, or moments of distraction?  Write a thorough description of the events you remember that are relevant to your attentional state in order." val={flowDesc} setter={setFlowDesc}/>
+
+            <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
+		    <Text>Roughly what fraction of time do you think you were in flow?</Text>
+            </View>
+	    {/*<FreeQ text="Roughly what fraction of time do you think you were in flow (0-100%)?" val={percentFlow} setter={setPercentFlow}/>*/}
+	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+		    <Text style={{fontWeight:'bold'}}>{percentFlow} %</Text>
+	    </View>
+	    <View style={{width:"100%", padding:5, paddingTop:10, flexDirection:'row', justifyContent:"flex-start", alignItems:'center'}}>
+		    <Slider
+		    onValueChange={sliderValue => setPercentFlow(parseInt(sliderValue))}
+		    minimumValue={0}
+		    maximumValue={100}
+		    step={10}
+		    value={percentFlow}
+		    style={{width:"100%"}}
+		    />
+	    </View>
+
+	    <FreeQ text="Do you remember having specific moments during this experience where you were either deeply lost in the activity or self-aware and distracted?  Write what you remember, in chronological order." val={flowDesc} setter={setFlowDesc}/>
 
 
 	    <View style={{padding:10}}/>
