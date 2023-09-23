@@ -21,7 +21,7 @@ import {
   Image,
 } from "react-native";
 
-function YesNoQ(props){
+function LikertQ4(props){
     
     const [radioState, setRadioState] = useState(null);	
 
@@ -38,15 +38,32 @@ function YesNoQ(props){
 
 	    <View style={{width:"100%", padding:5, paddingBottom:10, flexDirection:'row', justifyContent:"center", alignItems:'center'}}>
 
-	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(true)}}>
-		{radioState==true ? (<View style={styles.checkedCircle} />) : (<View />)}
-	    </TouchableOpacity>
-	    <Text>Yes      </Text>
+	    <Text style={{fontSize:11}}>{props.lowText}</Text>
 
-	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(false)}}>
-		{radioState==false ? (<View style={styles.checkedCircle} />) : (<View />)}
+	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(0)}}>
+		{radioState==0 ? (<View style={styles.checkedCircle} />) : (<View />)}
 	    </TouchableOpacity>
-	    <Text>No</Text>
+
+	    <Text>-</Text>
+
+	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(1)}}>
+		{radioState==1 ? (<View style={styles.checkedCircle} />) : (<View />)}
+	    </TouchableOpacity>
+
+	    <Text>-</Text>
+
+	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(2)}}>
+		{radioState==2 ? (<View style={styles.checkedCircle} />) : (<View />)}
+	    </TouchableOpacity>
+
+	    <Text>-</Text>
+
+	    <TouchableOpacity style={styles.circle} onPress={() => {setRadioState(3)}}>
+		{radioState==3 ? (<View style={styles.checkedCircle} />) : (<View />)}
+	    </TouchableOpacity>
+
+
+	    <Text style={{fontSize:11}}>{props.highText}</Text>
 
 	    </View>
 
@@ -76,21 +93,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   circle: {
-    height: 35,
-    width: 35,
-    borderRadius: 25,
+    height: 37,
+    width: 37,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: '#ACACAC',
     alignItems: 'center', // To center the checked circle…
     justifyContent: 'center',
-    marginHorizontal: 10
+    marginHorizontal: 5
     },
   checkedCircle: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     borderRadius: 15,
     backgroundColor: '#131313'
     }
 });
 
-export default React.memo(YesNoQ);
+export default React.memo(LikertQ4);
