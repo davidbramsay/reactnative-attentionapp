@@ -1287,7 +1287,7 @@ function App() {
 		/>}
 	    </Stack.Screen>*/}
 
-	    <Stack.Screen name="HomeSession" options={{title: "Home Session"}}>
+	    <Stack.Screen name="HomeSession" options={{title: "Experiment Session"}}>
 		{(props) => <HomeSession {...props}
 		    glassesStatus={glassesBleState}
 		    pavlokStatus={pavlokBleState}
@@ -1310,7 +1310,7 @@ function App() {
 		/>}
 	    </Stack.Screen>
 
-	    <Stack.Screen name="LabSession" options={{title: "Lab Session"}}>
+	    <Stack.Screen name="LabSession" options={{title: "Experiment Session"}}>
 		{(props) => <LabSession {...props}
 		    glassesStatus={glassesBleState}
 		    pavlokStatus={pavlokBleState}
