@@ -90,9 +90,11 @@ function SurveyPARTEmotion(props){
     const [nowStress, setNowStress] = useState(-1);	
     const [nowEmotion, setNowEmotion] = useState(-1);	
     const [nowEmoIntensity, setNowEmoIntensity] = useState(-1);	
+    const [nowEmoDominance, setNowEmoDominance] = useState(-1);	
 
     const [freeEmotion, setFreeEmotion] = useState('');	
     const [freeFood, setFreeFood] = useState('');	
+    const [freeTimes, setFreeTimes] = useState('');	
     const [freeAdditional, setFreeAdditional] = useState('');	
 
     useEffect(() => {
@@ -102,7 +104,7 @@ function SurveyPARTEmotion(props){
 			'nowStress', nowStress,
 			'nowEmotion', nowEmotion,
 			'nowEmoIntensity', nowEmoIntensity,
-		    	'reactionTimesMs', String(reactionTimes)
+			'nowEmoDominance', nowEmoDominance,
 	    ]);
 	}else{
 	    props.setter([
@@ -110,25 +112,26 @@ function SurveyPARTEmotion(props){
 			'nowStress', nowStress,
 			'nowEmotion', nowEmotion,
 			'nowEmoIntensity', nowEmoIntensity,
+			'nowEmoDominance', nowEmoDominance,
 			'freeEmotion', freeEmotion,
 			'freeFood', freeFood,
+			'freeTimes', freeTimes,
 			'freeAdditional', freeAdditional,
 		    	'reactionTimesMs', String(reactionTimes)
 	    ]);
 	}
-    }, [nowAlertness, nowStress, nowEmotion, nowEmoIntensity, freeEmotion, freeFood, freeAdditional, reactionTimes]);	
+    }, [nowAlertness, nowStress, nowEmotion, nowEmoIntensity, nowEmoDominance, freeEmotion, freeFood, freeTimes, freeAdditional, reactionTimes]);	
 
     return (
 	<>
 
-            <ReactionTime trials={13} val={reactionTimes} setter={setReactionTimes}/>			    
 
 	    <Text style={{paddingTop:10, paddingBottom:10, fontWeight:'bold'}}> How do you feel now? </Text>
 	    <LikertQ lowText="very low" highText="very high" text="Alertness" setter={setNowAlertness}/>
 	    <LikertQ lowText="very low" highText="very high"  text="Stress" setter={setNowStress}/>
 
 	    <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
-		    <Text>Emotional State</Text>
+		    <Text>Emotional Valence</Text>
             </View>
             <Image source={require('./images/SAM_valence.jpg')}
                 style={{width:'100%', height: undefined, aspectRatio:818/137, marginBottom:-25}}/>
@@ -136,14 +139,26 @@ function SurveyPARTEmotion(props){
 
 
 	    <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
-		    <Text>Emotional Intensity</Text>
+		    <Text>Emotional Arousal</Text>
             </View>
             <Image source={require('./images/SAM_arousal.jpg')}
                 style={{width:'100%', height: undefined, aspectRatio:818/137, marginBottom:-25}}/>
 	    <LikertQ5 lowText="" highText=""  text=" " setter={setNowEmoIntensity}/>
+
+	    <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
+		    <Text>Emotional Dominance</Text>
+            </View>
+            <Image source={require('./images/SAM_dominance.jpg')}
+                style={{width:'100%', height: undefined, aspectRatio:818/137, marginBottom:-25}}/>
+	    <LikertQ5 lowText="" highText=""  text=" " setter={setNowEmoDominance}/>
+
 	    {!props.shorten && <>
+
+            <ReactionTime trials={13} val={reactionTimes} setter={setReactionTimes}/>			    
+
 		    <FreeQ text="Describe your emotional and focus state:" val={freeEmotion} setter={setFreeEmotion}/>
 		    <FreeQ text="Recent food, caffeine, exercise, sleep?" val={freeFood} setter={setFreeFood}/>
+		    <FreeQ text="What times do you have events, meetings, or time-specific tasks?" val={freeTimes} setter={setFreeTimes}/>
 		    <FreeQ text="Anything else you think is relevant to your cognitive state, focus, or what happened during the study?" val={freeAdditional} setter={setFreeAdditional}/>
 	    </>}	
 

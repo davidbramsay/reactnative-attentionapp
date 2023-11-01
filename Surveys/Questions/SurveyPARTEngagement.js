@@ -40,24 +40,24 @@ const [E11, setE11] = useState(null);
   
     useEffect(() => {
       props.setter([
-                'E0': E0,
-                'E1': E1,
-                'E2': E2,
-                'E3': E3,
-                'E4': E4,
-                'E5': E5,
-                'E6': E6,
-                'E7': E7,
-                'E8': E8,
-                'E9': E9,
-                'E10': E10,
-                'E11': E11
+                'E0', E0,
+                'E1', E1,
+                'E2', E2,
+                'E3', E3,
+                'E4', E4,
+                'E5', E5,
+                'E6', E6,
+                'E7', E7,
+                'E8', E8,
+                'E9', E9,
+                'E10', E10,
+                'E11', E11
                       ]);
     }, [E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11]);
 
     const renderItem = ({ item }) => {
       return(     
-      <LikertQ5 setter={item.setter} text={item.text} lowText="Strongly disagree" highText="Strongly agree"/>
+      <LikertQ5 setter={item.setter} text={item.text} lowText="disagree" highText="agree"/>
     )};
 
     return (
@@ -68,18 +68,18 @@ const [E11, setE11] = useState(null);
 
       <FlatList
     data={[
-      {setter: setSCS0, text: "I lost myself in this experience."},
-      {setter: setSCS1, text: "The time I spent using Application X just slipped away."},
-      {setter: setSCS2, text: "I was absorbed in this experience."},
-      {setter: setSCS3, text: "I felt frustrated while using this Application X."},
-      {setter: setSCS4, text: "I found this Application X confusing to use."},
-      {setter: setSCS5, text: "Using this Application X was taxing."},
-      {setter: setSCS6, text: "This Application X was attractive."},
-      {setter: setSCS7, text: "This Application X was aesthetically appealing."},
-      {setter: setSCS8, text: "This Application X appealed to my senses."},
-      {setter: setSCS9, text: "Using Application X was worthwhile."},
-      {setter: setSCS10, text: "My experience was rewarding."},
-      {setter: setSCS11, text: "I felt interested in this experience."} 
+      {setter: setE0, text: "I lost myself in this experience."},
+      {setter: setE1, text: "The time I spent playing just slipped away."},
+      {setter: setE2, text: "I was absorbed in this experience."},
+      {setter: setE3, text: "I felt frustrated while playing"},
+      {setter: setE4, text: "I found this videogame confusing to use."},
+      {setter: setE5, text: "Playing this videogame was taxing."},
+      {setter: setE6, text: "This videogame was attractive."},
+      {setter: setE7, text: "This videogame was aesthetically appealing."},
+      {setter: setE8, text: "This videogame appealed to my senses."},
+      {setter: setE9, text: "Playing videogame was worthwhile."},
+      {setter: setE10, text: "My experience was rewarding."},
+      {setter: setE11, text: "I felt interested in this experience."}
     ]}
     renderItem={renderItem}
       />

@@ -5,8 +5,8 @@ import StatusView from "./StatusView.js";
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 
-import Video from 'react-native-video';
-import vidwearable from './phdstudy_3a1_watchglasses_v2.mp4';
+//import Video from 'react-native-video';
+//import vidwearable from './phdstudy_3a1_watchglasses_v2.mp4';
 
 import {
   SafeAreaView,
@@ -83,8 +83,6 @@ function HomeScreen(props) {
 	        connect={props.connect}/>
         </View>
 
-	<Text style={{width:'80%'}}> Watch the video below to guide you through putting on the WATCH and GLASSES.  Next, you'll hit the 'Home Session' button below to start the study-- it will guide you through the process.</Text>    
-        <Video source={vidwearable} paused={true} controls={true} style={{width:"80%", height:220, marginTop:10, marginBottom:10}}/>
 
         <View style={{height:150, width:'100%', flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
         <TouchableOpacity
@@ -97,7 +95,7 @@ function HomeScreen(props) {
             <Image source={require('./icons/wristwatch.png')}
                 style={{height:'80%', width: undefined, aspectRatio:1}}/>
 	    </View>
-            <Text style={{fontSize:16}}>Home Session</Text>
+            <Text style={{fontSize:16}}>Standard Session</Text>
         </TouchableOpacity>
         </View>
 
@@ -113,7 +111,7 @@ function HomeScreen(props) {
             <Image source={require('./icons/wristwatch.png')}
                 style={{height:'80%', width: undefined, aspectRatio:1}}/>
 	    </View>
-            <Text style={{fontSize:16}}>Lab Session</Text>
+            <Text style={{fontSize:16}}>Variable Session</Text>
         </TouchableOpacity>
         </View>
 

@@ -23,15 +23,10 @@ import {
 } from "react-native";
 
 
-import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
 import ChecklistItem from '../Surveys/Questions/ChecklistItem';
 import RecordingCue from '../Surveys/Questions/RecordingCue';
 import SurveyPARTEmotion from '../Surveys/Questions/SurveyPARTEmotion';
 
-import Video from 'react-native-video';
-import vidwearable from '../phdstudy_3a2_empatica_v2.mp4';
-import vidtetris from '../phdstudy3b_app_tetris.mp4';
-import vidstart from '../phdstudy3c_starttest_v2.mp4';
 
 function HomeStartSurvey(props){
 
@@ -124,37 +119,17 @@ function HomeStartSurvey(props){
     return (
 	<>
 	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    <Text style={{fontWeight:'bold', padding:15}}> Home Intro Survey</Text>
+		    <Text style={{fontWeight:'bold', padding:15}}> Intro Survey</Text>
 	    </View>
 
 	    <Text style={{padding:10}}></Text>
 
 	    <FlatList
 		data={[
-		    {type:"text", text:"Welcome!  You'll being playing Tetris and then engaging in your chosen flow activity today. Before you do, let's answer a few simple questions:"},
+		    {type:"text", text:"Welcome!  We'll start the session with a simple survey:"},
 		    {type:"surveypartemotion"},	
-		    {type:"section", text:"Finish Getting Started!"},
-		    {type:"text", text:"This video will walk you through putting on the wearables-- watch it, and then follow the steps it describes in the checklist below."},
-		    {type:"vid-wearables"},	
-		    {type:"section", text:"Getting Started Checklist"},
-		    {type:"checklist", boldtext:"1. My clocks are hidden.", text:"(Use the provided post-its if necessary.)"},	
-		    {type:"checklist", boldtext:"2. My notifications are silent.", text:""},	
-		    {type:"checklist", boldtext:"3. The watch is on my dominant hand.", text:"(It is always on.)"},	
-		    {type:"checklist", boldtext:"4. The glasses are connected and on", text:"by sliding the button back towards the temple; its LEDs will flash when it is on."},	
-		    {type:"empaticacue"},
-		    {type:"section", text:"Openning Tetris"},
-		    {type:"text", text:"For the first task, you will be playing tetris.  Let's get set up with Tetris."},	
-		    {type:"vid-tetris"},	
-		    {type:"checklist", boldtext:"1. Turn on the iPad and open 'Falling Lightblocks'.", text:""},	
-		    {type:"checklist", boldtext:"2. Put on headphones.", text:"(Turn them on by pressing forward on the right side switch)"},	
-		    {type:"checklist", boldtext:"3. Turn on the controller by pressing and holding the top 'X' button.", text:"(It should light up and connect. If it's not responding, use Bluetooth settings in control panel)"},	
-		    {type:"recordingcue"},			
 		    {type:"text", text:""},
-		    {type:"section", text:"You're ready!"},
-		    {type:"text", text:"You will now play tetris for a short session.  Once you have noticed the light has changed twice, you can end the activity at any time.  Then you'll be asked to fill out a survey. Watch the following video before starting."},
-		    {type:"vid-start"},	
-		    {type:"text", text:""},
-		    {type:"text", text:"Click below to get started!"},
+		    {type:"text", text:"Click below to start!"},
 		    {type:"submit"}]}
 	        renderItem={renderItem}
 	    />

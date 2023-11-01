@@ -23,23 +23,18 @@ import {
 
 import SurveyPARTEmotion from '../Surveys/Questions/SurveyPARTEmotion';
 import SurveyPARTFlow from '../Surveys/Questions/SurveyPARTFlow';
-import SurveyPARTThriving from '../Surveys/Questions/SurveyPARTThriving';
-import ChecklistItem from '../Surveys/Questions/ChecklistItem';
-import EmpaticaCue from '../Surveys/Questions/EmpaticaCue';
+import SurveyPARTEngagement from '../Surveys/Questions/SurveyPARTEngagement';
 
 function HomeFinalSurvey(props){
 
     const [scrollEnabled, setScrollEnabled] = useState(true);	
     const [emotionResults, setEmotionResults] = useState([]);	
     const [flowResults, setFlowResults] = useState([]);	
-    const [thrivingResults, setThrivingResults] = useState([]);	
-    const [empaticaTime, setEmpaticaTime] = useState("");	
+    const [engagementResults, setEngagementResults] = useState([]);	
     const [startSurveyTime, setStartSurveyTime] = useState("");	
-    const [donePlaying, setDonePlaying] = useState(false);	
 
     function handleActivityDone(){
 	setStartSurveyTime(new Date().toLocaleString());
-	setDonePlaying(true);
     }
 
     const renderItem = ({ item }) => {
@@ -72,9 +67,9 @@ function HomeFinalSurvey(props){
 		return(	    
 		 <SurveyPARTEmotion shorten={true} setter={setEmotionResults}/>
 		)
-	    } else if (item.type=='surveypartthriving'){
+	    } else if (item.type=='surveypartengagement'){
 		return(	    
-		    <SurveyPARTThriving setter={setThrivingResults}/>
+		    <SurveyPARTEngagement setter={setEngagementResults}/>
 		)
 	    } else if (item.type=='submit'){
 		 return(<>   
@@ -85,10 +80,9 @@ function HomeFinalSurvey(props){
 		 activeOpacity={0.5}
 		 onPress={() => {props.onSubmitted([
 		     'startSurveyTime', startSurveyTime,	 
-		     'empaticaEndTime', empaticaTime,
 		 	...flowResults,
 		     ...emotionResults,
-			...thrivingResults 
+			...engagementResults 
 		 ], false);}}>
 		 <Text style={{width:'100%', padding:10, paddingTop:5, height: 30, borderColor: '#7a42f4', 
 			      borderWidth: 1, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
@@ -104,52 +98,19 @@ function HomeFinalSurvey(props){
 
     return (
 	<>
-	    {donePlaying ?
-	    <>
 	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    <Text style={{fontWeight:'bold', padding:15}}> Home End Survey</Text>
+		    <Text style={{fontWeight:'bold', padding:15}}> Session End Survey</Text>
 	    </View>
  
 	    <FlatList keyboardShouldPersistTaps='handled' scrollEnabled={scrollEnabled}
 		data={[
-		   {type:"surveypartflow"},
 		   {type:"surveypartemotion"},
-		   {type:"surveypartthriving"},
-		   {type:"section", text:"End of Activity Checklist"},
-		   {type:"text", text:"Now that you're done with the activity, we'll walk you through taking off the wearables."},
-		   {type:"empaticacue"},
-		   {type:"checklist", boldtext:"1. Turn off the glasses.", text:"You many now remove both the glasses and the watch."}, 	
-		   {type:"checklist", boldtext:"2. Turn off the headphones and the iPad screen.", text:""}, 	
-		   {type:"checklist", boldtext:"3. Plug the glasses, watch, and this device into the charger.", text:""}, 	
-		   {type:"text", text:"Please submit this form below!"},
+		   {type:"surveypartflow"},
+		   {type:"surveypartengagement"},
 		   {type:"submit"}
 		]}
 	        renderItem={renderItem}
 	    />
-
-
-		    
-
-	   </>:<>
-		 <Text style={{textAlign:'center', fontSize:20, fontWeight:'bold', padding:10}}>Continue your Activity if you want!</Text>
-
-		 <Text style={{textAlign:'center', padding:10}}> When you're ready to move on, hit the button below. </Text>
-
-		 <View style={{...styles.separator, padding:20}} />
-
-		 <View style={{width:'100%', height:50, padding:5, justifyContent:'center', alignItems:'center'}}>
-		 <TouchableOpacity
-		 activeOpacity={0.5}
-		 onPress={handleActivityDone}>
-		 <Text style={{width:'100%', padding:10, paddingTop:5, height: 30, borderColor: '#7a42f4', 
-			      borderWidth: 1, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
-                    I'm done with the activity!
-                 </Text>
-                 </TouchableOpacity>
-
-                 </View>
-	   </>}
-
 	</>
     );
 }

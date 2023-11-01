@@ -13,9 +13,6 @@
 // startLogging('WORKING'), stopLogging(), sendToStorage()-- after sendToStorage, log 'continue' or something 
 // dataLog(), log()
 
-
-//This will now be the 'standard' measurement script. (fixed at 3 min).
-
 import {decode as atob, encode as btoa} from 'base-64'
 
 import React from "react";
@@ -27,9 +24,11 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Modal from "react-native-modal";
 import { AppState } from 'react-native';
 
-import HomeStartSurvey from "../Surveys/HomeStartSurvey";
-import HomeFinalSurvey from "../Surveys/HomeFinalSurvey";
-
+import LabStartSurvey from "../Surveys/LabStartSurvey";
+import LabMid1Survey from "../Surveys/LabMid1Survey";
+import LabMid2Survey from "../Surveys/LabMid2Survey";
+import LabFinalSurvey from "../Surveys/LabFinalSurvey";
+import LabMidActivitySurvey from "../Surveys/LabMidActivitySurvey";
 import {
   SafeAreaView,
   StyleSheet,
@@ -46,9 +45,9 @@ import {
 
 
 
-const HomeSessionState = ['off', 'session', 'complete'];
+const LabSessionState = ['off', 'demo', 'tetrisA', 'tetrisB', 'flowA', 'flowB', 'complete'];
 
-const MIN_TRANSITION_MIN=1;
+const MIN_TRANSITION_MIN=4;
 
 function Timer(callback, delay, minimum=0){
     var timerId, start, remaining = delay;
@@ -85,12 +84,12 @@ function Timer(callback, delay, minimum=0){
 
 }
 
-export default class HomeSession extends React.Component {
+export default class LabSession extends React.Component {
   constructor(props) {
     super(props);
     this.state = {intensity: 170, startBlue: 70, bIntensity: 50, notes: '',
                   mainInterval: 12.5, stepInterval: 300, testRunning: false, 
-	    	  currentState:0, sessionNum:1,
+	    	  currentState:0,
 	          popover: true, uploading: false};
     this.timer = null;
 
@@ -169,9 +168,9 @@ export default class HomeSession extends React.Component {
   }	
 
   async componentWillUnmount(){
-    console.log('unmount homesession');	  
+    console.log('unmount labsession');	  
     if (this.state.testRunning){
-      this.timer.clear();
+      this.timer.clear();	    
       await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
       try {	  
 	      this.setLightOff();
@@ -281,21 +280,36 @@ export default class HomeSession extends React.Component {
 
 
   getMainInterval(){
-    //fixed value of 3
-    let mins =  3;
-    //mins += Math.random();
+    //return random value in 5 min window around this.state.mainInterval (17.5-22.5 min for 20 min)	  
+
+    let mins =  this.state.mainInterval;
+    mins += (Math.random() * 5) - 2.5;
     return Math.round(mins*60*1000);
   }
 
   async resumeTest(gamenum){
       console.log('RESUME TEST');
 
-      if (this.props.glassesStatus == 'Connected.'){	  
+      if (this.props.glassesStatus == 'Connected.'){
 
       //only resume when popover is false, otherwise leave paused	  
       if (this.state.popover == false){
 
-          await this.props.startLogging('RESUME');	  
+
+	      switch(LabSessionState[this.state.currentState]){
+			case 'off':
+			case 'demo':
+				await this.props.startLogging('LAB_DEMO_RESUME');	  
+				break;
+			case 'tetrisA':
+			case 'tetrisB':
+				await this.props.startLogging('LAB_TETRIS_RESUME');	  
+				break;
+			case 'flowA':
+			case 'flowB':
+				await this.props.startLogging('LAB_FLOWACTIVITY_RESUME');	  
+				break;
+		}
 
 	      await this.props.dataLog('u', ['VIDGAME',
 		  'START_TEST',
@@ -307,15 +321,30 @@ export default class HomeSession extends React.Component {
 
 	      this.setState({testRunning: true});
 
-	      if (this.transitioning || this.transitioned) {	      
-		      console.log('resuming test, after failure during or after transition; new timer');
+	      switch(LabSessionState[this.state.currentState]){ 
+		case 'off':	      
+		case 'demo':
+		      console.log('starting transition in 1 min');
 		      this.timer.clear();
-		      this.timer = new Timer(this.changeColor.bind(this), MIN_TRANSITION_MIN*60*1000, MIN_TRANSITION_MIN*60*1000);
+		      this.timer = new Timer(this.changeColor.bind(this), 60*1000, 60*1000);
 		      this.transitioning = false;
 		      this.transitioned = false;
-	      } else {
-		      console.log('resuming test, arming remaining transition');
-		      this.timer.resume();
+		      break;	      
+		case 'tetrisA':
+		case 'tetrisB':
+		case 'flowA':
+		case 'flowB':
+		      if (this.transitioning || this.transitioned) {	      
+			      console.log('resuming test, after failure during or after transition; new timer');
+			      this.timer.clear();
+			      this.timer = new Timer(this.changeColor.bind(this), MIN_TRANSITION_MIN*60*1000, MIN_TRANSITION_MIN*60*1000);
+			      this.transitioning = false;
+			      this.transitioned = false;
+		      } else {
+			      console.log('resuming test, arming remaining transition');
+			      this.timer.resume();
+		      }
+		      break;		      
 	      }
 
 	      this.resetLight();
@@ -324,14 +353,14 @@ export default class HomeSession extends React.Component {
 	console.log('CANNOT RESUME TEST, POPOVER TRUE');
       }
       } else { //no glasses connection, don't start test
-	      console.log('glasses not connected, can\'t resume test');
-	      this.props.setScanning(true);
-	      this.disconnected = true;
-      }
-
+             console.log('glasses not connected, can\'t resume test');
+             this.props.setScanning(true);
+             this.disconnected = true;
+      }	      
   }
 
   async pauseTest(){
+      
       if (this.state.popover){
 	      await this.props.dataLog('u', ['VIDGAME', 'STOP_TEST']);
       }else{
@@ -349,6 +378,7 @@ export default class HomeSession extends React.Component {
       }
   }
 
+
   toggleTest(){
     if (this.state.testRunning){
         this.pauseTest();
@@ -360,10 +390,20 @@ export default class HomeSession extends React.Component {
   async startTest(){
       console.log('START TEST');
 
-      console.log('armed normal transition');
-
-      //EDIT: RANDOM VS FIXED: this is fixed now
-      this.timer = new Timer(this.changeColor.bind(this), this.getMainInterval(), MIN_TRANSITION_MIN*60*1000);
+      switch(LabSessionState[this.state.currentState]){ 
+	case 'off':	      
+	case 'demo':
+	      console.log('starting transition in 1 min');
+	      this.timer = new Timer(this.changeColor.bind(this), 60*1000, 60*1000);
+	      break;	      
+	case 'tetrisA':
+	case 'tetrisB':
+	case 'flowA':
+	case 'flowB':
+	      console.log('armed normal transition');
+	      this.timer = new Timer(this.changeColor.bind(this), this.getMainInterval(), MIN_TRANSITION_MIN*60*1000);
+	      break;	      
+      }
 
       if (this.props.glassesStatus == 'Connected.'){	  
 	      console.log('glasses connected, can start test');
@@ -397,40 +437,68 @@ export default class HomeSession extends React.Component {
 	
 	var time = Date.now();  
 
-	console.log('Game State = ' + HomeSessionState[this.state.currentState]);  
+	console.log('Game State = ' + LabSessionState[this.state.currentState]);  
 	console.log(surveyResults);
 	  
-	switch(HomeSessionState[this.state.currentState]){
+	switch(LabSessionState[this.state.currentState]){
 		case 'off':
 			//open initial file, write survey data, start session (start timer, turn on light)
 		        this.setState({uploading: true, testRunning: false});
-		      	await this.props.startLogging('S1');	  
-            console.log('a');
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'StartSurvey']);
-            console.log('b');
+		      	await this.props.startLogging('LAB_DEMO');	  
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabStartSurvey']);
 			await this.writeSurveyResults(surveyResults);
-            console.log('c');
 			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
 			await this.startTest();
 			break;
-		case 'session':
+		case 'demo':	
+		        this.setState({uploading: true, testRunning: false});
+		        await this.props.stopLogging();	  
+		      	await this.props.startLogging('LAB_TETRIS');	  
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabMid1Survey']);
+			await this.writeSurveyResults(surveyResults);
+			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
+			await this.startTest();
+			break;
+		case 'tetrisA':
 			//write survey data, close file and continue file, write 'continuation' log, restart session
 		        this.setState({uploading: true, testRunning: false});
-			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'SessionSurvey']);
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabMidActivitySurvey']);
 			await this.writeSurveyResults(surveyResults);
-            await this.props.stopLogging();
-			this.setState((prevState) => ({uploading:false, sessionNum:prevState.sessionNum+1, currentState:prevState.currentState+1}));
+		        await this.props.sendToStorage();
+			await this.props.log('SESSION','CONTINUATION')	  
+			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
+			await this.startTest();
+			break;
+		case 'tetrisB':
+			//write survey data, close file and new filename,  restart session
+		        this.setState({uploading: true, testRunning: false});
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabMid2Survey']);
+			await this.writeSurveyResults(surveyResults);
+		        await this.props.stopLogging();	  
+		      	await this.props.startLogging('LAB_FLOW');	  
+			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
+			await this.startTest();
+			break;
+		case 'flowA':
+			//write survey data, close file and continue file, write 'continuation' log, restart session
+		        this.setState({uploading: true, testRunning: false});
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabMidActivitySurvey']);
+			await this.writeSurveyResults(surveyResults);
+		        await this.props.sendToStorage();
+			await this.props.log('SESSION','CONTINUATION')	  
+			this.setState((prevState) => ({popover: false, uploading:false, currentState:prevState.currentState+1}));
+			await this.startTest();
+			break;
+		case 'flowB':
+			//write survey data, close file and end
+		        this.setState({uploading: true, testRunning: false});
+			await this.props.dataLog('u',['VIDGAME', 'SURVEY', time, 'LabFinalSurvey']);
+			await this.writeSurveyResults(surveyResults);
+		        await this.props.stopLogging(true);	  
+			this.setState((prevState) => ({uploading:false, currentState:prevState.currentState+1}));
 			break;
 	}
   }
-
-  async keepGoing(name){
-        console.log('keepgoing called ' + name);
-        await this.props.startLogging(name);  
-        this.setState((prevState) => ({popover:false, currentState:1}));
-        await this.startTest();
-  }
-
 
   render() {
     console.log('rerender');	  
@@ -445,19 +513,23 @@ export default class HomeSession extends React.Component {
                     UPLOADING... please wait. 
                 </Text>
 	    </>:<>
-		{this.state.currentState==0 && <HomeStartSurvey    
+		{this.state.currentState==0 && <LabStartSurvey    
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-		{this.state.currentState==1 && <HomeFinalSurvey
+		{this.state.currentState==1 && <LabMid1Survey
 		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
-	       {this.state.currentState==2 ? <>
+		{this.state.currentState==2 && <LabMidActivitySurvey
+		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
+		{this.state.currentState==3 && <LabMid2Survey
+		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
+		{this.state.currentState==4 && <LabMidActivitySurvey
+		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
+		{this.state.currentState==5 && <LabFinalSurvey
+		    onSubmitted={(surveyResults) => {this.surveyDone(surveyResults);}}/>}
+	       {this.state.currentState==6 ? <>
 			<Text style={{width:'100%', padding:10, paddingTop:5, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
-			   You are about to start session {this.state.sessionNum}. Click here to begin the next session:{"\n\n"} 
+			   Completed! Thank you!  {"\n\n"} Please exit this screen or the app! {"\n\n"} Don't forget to charge the watch and the glasses overnight! {"\n\n"}
 			</Text>
-			<Button title="Start Another Session" onPress={() => {this.keepGoing('S' + this.state.sessionNum)}}/>
-			<Text style={{width:'100%', padding:10, paddingTop:5, textAlign:'center', alignItems:'center', justifyContent:'center'}}>
-			   Click here if you have completed the experiment:{"\n\n"} 
-			</Text>
-			<Button title="Done with Experiment" onPress={() => {this.setState({popover:false, currentState: 0})}}/>
+			<Button title="OK" onPress={() => {this.setState({popover:false, currentState: 0})}}/>
 	       </>:<></>}
 	   </>}
         </Modal>
@@ -479,6 +551,7 @@ export default class HomeSession extends React.Component {
 
 
         <View style={{width:'100%', height:200, flexGrow:1, flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+
 
         <TouchableOpacity
           style={{...styles.bigbuttonStyleLarge, opacity:this.state.testRunning?1:0.3}}
@@ -515,6 +588,7 @@ export default class HomeSession extends React.Component {
             <Text style={{paddingRight:75, fontSize:20, color:'red'}}> Test Paused.</Text>
         }
         </View>
+
 
         <View style={styles.separator} />
 

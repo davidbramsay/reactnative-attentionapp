@@ -529,7 +529,8 @@ function App() {
 		{year: '2-digit', month: '2-digit', day: '2-digit', 
 		 hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false});
 	  t = t.replace(/[^0-9]/g, "");
-	  let filename = t.slice(0,6) + '_' + t.slice(6) + '_' + username.toLowerCase() + '_' + callingFunc + '.csv';    
+	  let filename = t.slice(0,6) + '_' + t.slice(6) + '_ELENA' + username.toLowerCase() + '_' + callingFunc + '.csv';    
+      console.log(filename);  
 
 	  fileStream.current = await RNFetchBlob.fs.writeStream(
 		utils.FilePath.DOCUMENT_DIRECTORY + '/' + filename,

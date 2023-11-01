@@ -102,31 +102,13 @@ function SurveyPARTFlow(props){
 
     const [flowPath, setFlowPath] = useState([]);	
     const [flowCanvasSize, setFlowCanvasSize] = useState({width:null, height:null});	
-
-
-    const [confidence, setConfidence] = useState(-1);	
-    const [time, setTime] = useState('');
-    const [actualTimeAtGuess, setActualTimeAtGuess] = useState('');	
-    const [timeValid, setTimeValid] = useState(false);
-
-    const handleTimeChange = (time, validTime) => {
-	    if (!validTime) return;
-	    setTime(time);
-	    setTimeValid(true);
-    }
  
-    useEffect(() => {
-	    console.log('HANDLE TIME');
-	    setActualTimeAtGuess(new Date().toLocaleString())
-    }, [time]);
-
-
     const [lastClockConfidence, setLastClockConfidence] = useState(-1);	
     const [dur, setDur] = useState(null);	
     const [actualTimeAtDuration, setActualTimeAtDuration] = useState('');	
 
     const handleDurChange = (duration) => {
-	    if (parseInt(duration) > 0 && parseInt(duration) < 241 || duration ==''){
+	    if (parseInt(duration) > 0 || duration ==''){
 		    setDur(duration);
 	    }	
     }
@@ -173,9 +155,6 @@ function SurveyPARTFlow(props){
 		'durGuess', dur,
 		'timeAtDurGuess', actualTimeAtDuration,
 		'durTimeConfidence', lastClockConfidence,   
-		'guessTime', time,    
-		'timeAtGuess', actualTimeAtGuess,
-		'guessTimeConfidence', confidence,
 		'flowPath', String(flowPath),
 		'flowCanvasSize', String(flowCanvasSize.width) + ',' + String(flowCanvasSize.height),
 		'timeExp', timeExp,
@@ -187,12 +166,6 @@ function SurveyPARTFlow(props){
 		'durToFlow', durToFlow,
 		'percentFlow', percentFlow,
 		'flowDesc', flowDesc,    
-		'flowDescA', flowDescA,   
-                'flowDescB', flowDescB,
-                'flowDescC', flowDescC,
-                'flowDescD', flowDescD,
-                'flowDescE', flowDescE,
-                'flowDescF', flowDescF,
 		'FSS1', FSS1,
                 'FSS2', FSS2,
                 'FSS3', FSS3,
@@ -207,19 +180,34 @@ function SurveyPARTFlow(props){
 		'flowQ3', flowQ3,
 		'flowQ4', flowQ4
 	    ]);
-    }, [dur, actualTimeAtDuration, lastClockConfidence, time, actualTimeAtGuess, confidence, flowPath, flowCanvasSize,  timeExp, focus, effort, deepest, flow, durFlow, durToFlow, percentFlow, flowDesc, flowDescA, flowDescB, flowDescC, flowDescD, flowDescE, flowDescF, FSS1, FSS2, FSS3, FSS4, FSS5, FSS6, FSS7, FSS8, FSS9, flowQ1, flowQ2, flowQ3, flowQ4]);	
+    }, [dur, actualTimeAtDuration, lastClockConfidence, flowPath, flowCanvasSize,  timeExp, focus, effort, deepest, flow, durFlow, durToFlow, percentFlow, flowDesc, FSS1, FSS2, FSS3, FSS4, FSS5, FSS6, FSS7, FSS8, FSS9, flowQ1, flowQ2, flowQ3, flowQ4]);	
 
     return (
 	<>
+
+        <View style={{width:"100%", padding:5, paddingTop:40, alignItems:'flex-start'}}>
+        <Text style={{fontWeight:'bold'}}>Rate the following from strongly disagree to strongly agree:</Text>
+        </View>
+
+	    <LikertQ text="I feel I am competent enough to meet the highest demands of the situation." lowText="disagree" highText="agree" setter={setFSS1}/>
+	    <LikertQ text="I do things spontaneously and automatically without having to think." lowText="disagree" highText="agree" setter={setFSS2}/>
+	    <LikertQ text="I have a strong sense of what I want to do." lowText="disagree" highText="agree" setter={setFSS3}/>
+	    <LikertQ text="I have a good idea while I am performing about how well I am doing." lowText="disagree" highText="agree" setter={setFSS4}/>
+	    <LikertQ text="I am completely focused on the task at hand." lowText="disagree" highText="agree" setter={setFSS5}/>
+	    <LikertQ text="I have a feeling of total control." lowText="disagree" highText="agree" setter={setFSS6}/>
+	    <LikertQ text="I am not worried about what others may be thinking of me." lowText="disagree" highText="agree" setter={setFSS7}/>
+	    <LikertQ text="The way time passes seems to be different from normal." lowText="disagree" highText="agree" setter={setFSS8}/>
+	    <LikertQ text="The experience is extremely rewarding." lowText="disagree" highText="agree" setter={setFSS9}/>
+
 	    {/* Start time questions */}
             <View style={{width:"100%", padding:5, paddingTop:40, alignItems:'flex-start'}}>
-		    <Text>How long do you think you engaged in the previous activity?</Text>
+		    <Text>How long do you think you engaged in the previous activity (in seconds)?</Text>
             </View>
 
 	    <View style={{width:"100%", alignItems:'center'}}>
 	    <TextInput
 	    keyboardType="number-pad"
-      	    maxLength={3}
+      	    maxLength={4}
 	    onChangeText={text => handleDurChange(text)}
 	    placeholder="00"
 	    value={dur}
@@ -236,7 +224,7 @@ function SurveyPARTFlow(props){
 	    }}
             />
 
-    	    <Text style={{paddingTop:20}}>Duration entered is: {dur} min</Text>
+    	    <Text style={{paddingTop:20}}>Duration entered is: {dur} seconds</Text>
 	    </View>
 
             <View style={{width:"100%", padding:5, paddingTop:30, alignItems:'flex-start'}}>
@@ -256,40 +244,7 @@ function SurveyPARTFlow(props){
             value={lastClockConfidence}
             style={{width:"100%"}}
             />
-
-	    </View>
-            <View style={{width:"100%", padding:5, alignItems:'flex-start'}}>
-		    <Text>What time do you think it is now?</Text>
-            </View>
-
-	    <View style={{width:"100%", alignItems:'center'}}>
-	    <TimeInput
-		initialTime={0}
-		onTimeChange={handleTimeChange}
-	    />
-    	    {timeValid?<Text>time entered is: {time}</Text>:<></>}
-	    </View>
-	    
-
-
-            <View style={{width:"100%", padding:5, paddingTop:30, alignItems:'flex-start'}}>
-		    <Text>How certain are you?</Text>
-            </View>
-
-	    <View style={{width:"100%", flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-		    <Text style={{fontWeight:'bold'}}>{confidenceMap[confidence]}</Text>
-	    </View>
-
-	    <View style={{width:"100%", padding:5, paddingTop:10, paddingBottom:30, flexDirection:'row', justifyContent:"flex-start", alignItems:'center'}}>
-		    <Slider
-		    onValueChange={sliderValue => setConfidence(parseInt(sliderValue))}
-		    minimumValue={1}
-		    maximumValue={5}
-		    step={1}
-		    value={confidence}
-		    style={{width:"100%"}}
-		    />
-	    </View>
+        </View>
 	    {/* End time questions */}
 
 	    <LikertQ text="Did you experience time differently?" lowText="intensely slow" highText="intensely fast"  setter={setTimeExp}/>
@@ -356,39 +311,7 @@ function SurveyPARTFlow(props){
 	    <LikertQ text="Was the activity important to you?" lowText="very low" highText="very high" setter={setFlowQ3}/>
 	    <LikertQ text="Were you satisfied with how you did?" lowText="very low" highText="very high" setter={setFlowQ4}/>
 
-            <View style={{width:"100%", padding:5, paddingTop:40, alignItems:'flex-start'}}>
-		    <Text style={{fontWeight:'bold'}}>Rate the following from strongly disagree to strongly agree:</Text>
-            </View>
 
-	    <LikertQ text="I feel I am competent enough to meet the highest demands of the situation." lowText="disagree" highText="agree" setter={setFSS1}/>
-	    <LikertQ text="I do things spontaneously and automatically without having to think." lowText="disagree" highText="agree" setter={setFSS2}/>
-	    <LikertQ text="I have a strong sense of what I want to do." lowText="disagree" highText="agree" setter={setFSS3}/>
-	    <LikertQ text="I have a good idea while I am performing about how well I am doing." lowText="disagree" highText="agree" setter={setFSS4}/>
-	    <LikertQ text="I am completely focused on the task at hand." lowText="disagree" highText="agree" setter={setFSS5}/>
-	    <LikertQ text="I have a feeling of total control." lowText="disagree" highText="agree" setter={setFSS6}/>
-	    <LikertQ text="I am not worried about what others may be thinking of me." lowText="disagree" highText="agree" setter={setFSS7}/>
-	    <LikertQ text="The way time passes seems to be different from normal." lowText="disagree" highText="agree" setter={setFSS8}/>
-	    <LikertQ text="The experience is extremely rewarding." lowText="disagree" highText="agree" setter={setFSS9}/>
-
-            <View style={{width:"100%", padding:5, paddingTop:40, alignItems:'flex-start'}}>
-		    <Text style={{fontWeight:'bold'}}>Please indicate if the following descriptions apply to your experience:</Text>
-            </View>
-
-	    <YesNoQ setter={setFlowDescA} text="(a) 'My mind isn't wandering. I am totally involved in what I am doing and I am not thinking of anything else. My body feels good... the world seems to be cut off from me... I am less aware of myself and my problems.'"/>
-	    <YesNoQ setter={setFlowDescB} text="(b) 'My concentration is like breathing... I never think of it... When I start, I really do shut out the world.'"/>
-	    <YesNoQ setter={setFlowDescC} text="(c) 'I am so involved in what I am doing... I don't see myself as separate from what I am doing.'"/>
-	    <YesNoQ setter={setFlowDescD} text="(d) 'I am really quite oblivious to my surroundings after I really get going in this activity.'"/>
-	    <YesNoQ setter={setFlowDescE} text="(e) 'I think that the phone could ring, and the doorbell could ring or the house burn down or something like that...'"/>
-	    <YesNoQ setter={setFlowDescF} text="(f) 'Once I stop I can let it back in again'"/>
-
-	    {/*
-	    <TrueFalseQ setter={setTF} text='test text for true/false'/>
-
-	    <Text style={{paddingTop:10, paddingBottom:10, fontWeight:'bold'}}> How do you feel now? </Text>
-
-	    <ShortQ map={lowMap} text="Stress" val={shortQ} setter={setShortQ}/>
-	    <FreeQ text="Describe your emotional and focus state:" val={freeQ} setter={setFreeQ}/>
-	    */}
 
 	</>
     );
